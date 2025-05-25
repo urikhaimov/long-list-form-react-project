@@ -1,5 +1,17 @@
+export const ACTIONS = {
+  SET_USERS: 'set-users',
+  UPDATE_USER: 'update-user',
+  DELETE_USER: 'delete-user',
+  ADD_USER: 'add-user',
+  SAVE_REQUEST: 'save-request',
+  SAVE_SUCCESS: 'save-success',
+  SAVE_FAILURE: 'save-failure',
+};
+
 export function usersReducer(state, action) {
+   console.log('Reducer received action:', action);
   switch (action.type) {
+    
     case ACTIONS.SET_USERS:
       return { ...state, users: action.payload };
 
@@ -20,7 +32,6 @@ export function usersReducer(state, action) {
       };
 
     case ACTIONS.ADD_USER:
-      console.log('Reducer adding user:', action.payload.newUser);
       return {
         ...state,
         users: [action.payload.newUser, ...state.users],
@@ -39,13 +50,3 @@ export function usersReducer(state, action) {
       return state;
   }
 }
-
-export const ACTIONS = {
-  SET_USERS: 'set-users',
-  UPDATE_USER: 'update-user',
-  DELETE_USER: 'delete-user',
-  ADD_USER: 'add-user',
-  SAVE_REQUEST: 'save-request',
-  SAVE_SUCCESS: 'save-success',
-  SAVE_FAILURE: 'save-failure',
-};

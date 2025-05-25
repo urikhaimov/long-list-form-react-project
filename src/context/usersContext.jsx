@@ -14,9 +14,12 @@ export const ContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(usersReducer, initialState);
 
   useEffect(() => {
+    dispatch({ type: ACTIONS.SAVE_REQUEST });
     const t = setTimeout(() => {
       dispatch({ type: ACTIONS.SET_USERS, payload: data });
+       dispatch({ type: ACTIONS.SAVE_SUCCESS });
     }, 1000);
+   
     return () => clearTimeout(t);
   }, [dispatch]);
 
