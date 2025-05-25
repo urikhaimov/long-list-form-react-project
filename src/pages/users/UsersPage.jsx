@@ -1,7 +1,6 @@
 import { useUsersContext } from '../../context/usersContext';
 import { ACTIONS } from '../users/reducers';
 import UsersList from './usersList/UsersList';
-import PrimaryButton from '../../components/PrimaryButton';
 import { Snackbar, Alert, CircularProgress, Box, Button } from '@mui/material';
 import { useState } from 'react';
 import styles from './users.module.css';
