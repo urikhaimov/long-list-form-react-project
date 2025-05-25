@@ -3,7 +3,9 @@ import {
   Typography,
   Button,
   Box,
-  Divider
+  Divider,
+  Paper,
+  Stack,
 } from '@mui/material';
 import { FixedSizeList as List } from 'react-window';
 import { useUsersContext } from '../../../context/usersContext';
@@ -79,28 +81,35 @@ function UsersList() {
   const Row = ({ index, style }) => {
     const user = filteredUsers[index];
     return (
-      <div style={style}>
-        <UserRow
-          user={user}
-          handleInputChange={handleInputChange}
-          onDelete={handleDelete}
-        />
-        <Divider />
+      <div style={{ ...style, padding: '8px 0' }}>
+        <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
+          <UserRow
+            user={user}
+            handleInputChange={handleInputChange}
+            onDelete={handleDelete}
+          />
+        </Paper>
       </div>
     );
   };
 
-
   return (
-    <div className={styles.usersList}>
-      <div className={styles.usersListHeader}>
-        <Typography variant="h6">Users List</Typography>
+    <Box className={styles.usersList} sx={{ maxWidth: '1200px', mx: 'auto', p: 2 }}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        spacing={2}
+        sx={{ mb: 2 }}
+        className={styles.usersListHeader}
+      >
+        <Typography variant="h5">Users List</Typography>
         <Button variant="contained" onClick={handleAdd}>
           Add User
         </Button>
-      </div>
+      </Stack>
 
-      <Box p={2}>
+      <Box sx={{ mb: 2 }}>
         <SearchInput
           label="Search by name, email, or country"
           value={searchTerm}
@@ -108,12 +117,21 @@ function UsersList() {
         />
       </Box>
 
-      <Box ref={listContainerRef} sx={{ width: '100%', height: 600 }}>
+      <Box
+        ref={listContainerRef}
+        sx={{
+          width: '100%',
+          height: 330,
+          borderRadius: 2,
+          backgroundColor: 'background.paper',
+          boxShadow: 1,
+        }}
+      >
         {listWidth > 0 && filteredUsers.length > 0 ? (
           <List
-            height={350}
+            height={330}
             itemCount={filteredUsers.length}
-            itemSize={80}  // Adjust based on actual row height
+            itemSize={100} // Adjusted for padding + Paper
             width={listWidth}
           >
             {Row}
@@ -124,7 +142,7 @@ function UsersList() {
           </Typography>
         ) : null}
       </Box>
-    </div>
+    </Box>
   );
 }
 

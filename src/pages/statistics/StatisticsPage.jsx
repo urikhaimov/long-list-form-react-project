@@ -1,13 +1,13 @@
-import styles from './statistics.module.css';
 import { Pie } from 'react-chartjs-2';
 import { useUsersContext } from '../../context/usersContext';
 import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
-  Legend
+  Legend,
 } from 'chart.js';
 import { useRef } from 'react';
+import { Box, Typography, Button, List, ListItem, ListItemText, Paper } from '@mui/material';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -30,7 +30,7 @@ function StatisticsPage() {
       {
         data: sortedCountries.map(([, count]) => count),
         backgroundColor: [
-          '#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#FF9800', '#9C27B0'
+          '#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#FF9800', '#9C27B0',
         ],
         borderWidth: 1,
       },
@@ -39,6 +39,7 @@ function StatisticsPage() {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'bottom',
@@ -46,7 +47,6 @@ function StatisticsPage() {
           const index = legendItem.index;
           const ci = legend.chart;
           const meta = ci.getDatasetMeta(0);
-          // Toggle visibility
           meta.data[index].hidden = !meta.data[index].hidden;
           ci.update();
         },
@@ -75,28 +75,36 @@ function StatisticsPage() {
   };
 
   return (
-    <div className={styles.pageRoot}>
-      <h2>Statistics Page</h2>
+    <Box sx={{ maxWidth: '1000px', mx: 'auto', p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Statistics Page
+      </Typography>
 
-      <div className={styles.summary}>
-        <h4>Top Countries</h4>
-        <ul>
+      <Paper elevation={3} sx={{ p: 2, mb: 4 }}>
+        <Typography variant="h6" gutterBottom>
+          Top Countries
+        </Typography>
+        <List dense>
           {sortedCountries.map(([country, count]) => (
-            <li key={country}>
-              {country}: {count} users ({((count / totalUsers) * 100).toFixed(1)}%)
-            </li>
+            <ListItem key={country} disableGutters>
+              <ListItemText
+                primary={`${country}: ${count} users (${((count / totalUsers) * 100).toFixed(1)}%)`}
+              />
+            </ListItem>
           ))}
-        </ul>
-      </div>
+        </List>
+      </Paper>
 
-      <div className={styles.chartContainer}>
-        <Pie ref={chartRef} data={chartData} options={chartOptions} />
-      </div>
+      <Paper elevation={3} sx={{ p: 2, mb: 4 }}>
+        <Box sx={{ width: '100%', height: { xs: 300, sm: 400, md: 500 } }}>
+          <Pie ref={chartRef} data={chartData} options={chartOptions} />
+        </Box>
+      </Paper>
 
-      <button className={styles.exportButton} onClick={handleExport}>
+      <Button variant="contained" color="primary" onClick={handleExport}>
         Export Chart as Image
-      </button>
-    </div>
+      </Button>
+    </Box>
   );
 }
 
