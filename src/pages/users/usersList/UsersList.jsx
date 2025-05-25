@@ -18,7 +18,7 @@ import { useUsersContext } from '../../../context/usersContext';
 import UserRow from '../userRow/UserRow';
 import { ACTIONS } from '../reducers';
 import SearchInput from '../../../components/SearchInput';
-import {localReducer} from '../usersList/localReducer'
+import { localReducer } from '../usersList/localReducer'
 import styles from '../users.module.css';
 
 const initialState = {
@@ -108,56 +108,70 @@ function UsersList() {
     );
   };
 
-  return (
-    <Box className={styles.usersList} sx={{ maxWidth: '1200px', mx: 'auto', p: 2 }}>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={2}
-        sx={{ mb: 2 }}
-        className={styles.usersListHeader}
+  return (<Box className={styles.usersList} sx={{
+    maxWidth: '1200px',
+    mx: 'auto',
+    p: { xs: 1, sm: 2 },
+  }}>
+    <Stack
+      direction={{ xs: 'column', sm: 'row' }}
+      justifyContent="space-between"
+      alignItems={{ xs: 'stretch', sm: 'center' }}
+      spacing={2}
+      sx={{ mb: 2 }}
+      className={styles.usersListHeader}
+    >
+      <Typography
+        variant="h5"
+        sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }}
       >
-        <Typography variant="h5">Users List</Typography>
-        <Button variant="contained" onClick={handleAdd}>
-          Add User
-        </Button>
-      </Stack>
-
-      <Box sx={{ mb: 2 }}>
-        <SearchInput
-          label="Search by name, email, or country"
-          value={searchTerm}
-          onChange={(val) => localDispatch({ type: 'SET_SEARCH_TERM', payload: val })}
-        />
-      </Box>
-
-      <Box
-        ref={listContainerRef}
-        sx={{
-          width: '100%',
-          height: 330,
-          borderRadius: 2,
-          backgroundColor: 'background.paper',
-          boxShadow: 1,
-        }}
+        Users List
+      </Typography>
+      <Button
+        variant="contained"
+        onClick={handleAdd}
+        sx={{ width: { xs: '100%', sm: 'auto' } }}
       >
-        {listWidth > 0 && filteredUsers.length > 0 ? (
-          <List
-            height={330}
-            itemCount={filteredUsers.length}
-            itemSize={100}
-            width={listWidth}
-          >
-            {Row}
-          </List>
-        ) : filteredUsers.length === 0 ? (
-          <Typography variant="body1" color="text.secondary" align="center" mt={2}>
-            No users found.
-          </Typography>
-        ) : null}
-      </Box>
+        Add User
+      </Button>
+    </Stack>
+
+    <Box sx={{ mb: 2 }}>
+      <SearchInput
+        label="Search by name, email, or country"
+        value={searchTerm}
+        onChange={(val) => localDispatch({ type: 'SET_SEARCH_TERM', payload: val })}
+      />
     </Box>
+
+    <Box
+      ref={listContainerRef}
+      sx={{
+        width: '100%',
+        height: { xs: 300, sm: 330 },
+        borderRadius: 2,
+        backgroundColor: 'background.paper',
+        boxShadow: 1,
+        overflow: 'hidden',
+      }}
+    >
+      {listWidth > 0 && filteredUsers.length > 0 ? (
+        <List
+          height={330}
+          itemCount={filteredUsers.length}
+          itemSize={100}
+          width={listWidth}
+        >
+          {Row}
+        </List>
+      ) : filteredUsers.length === 0 ? (
+        <Typography variant="body1" color="text.secondary" align="center" mt={2}>
+          No users found.
+        </Typography>
+      ) : null}
+    </Box>
+  </Box>
+
   );
 }
 

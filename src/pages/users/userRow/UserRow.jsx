@@ -26,7 +26,8 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
       id={`user-row-${id}`}
       tabIndex={-1}
       display="flex"
-      alignItems="center"
+      flexDirection={{ xs: 'column', sm: 'row' }}
+      alignItems={{ xs: 'stretch', sm: 'center' }}
       gap={2}
       sx={{
         p: 2,
@@ -35,6 +36,9 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
         backgroundColor: isInvalid ? '#fff3f3' : 'background.paper',
         border: isInvalid ? '1px solid #f44336' : '1px solid transparent',
         boxShadow: 1,
+        width: '100%',             // Ensure row doesn’t exceed parent
+        boxSizing: 'border-box',   // Prevent width issues with padding
+        overflowX: 'hidden',       // Explicitly hide scroll if child misbehaves
       }}
     >
       <InputField
@@ -43,17 +47,17 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
         error={hasError('name', name)}
         helperText={hasError('name', name) ? 'Name is required' : ''}
         onChange={(e) => handleInputChange(id, 'name', e.target.value)}
-        sx={{ width: 150 }}
+        sx={{ width: { xs: '100%', sm: 150 }, flexShrink: 0 }}
       />
 
       <AutocompleteField
         options={countries}
         value={user.country || null}
-        onChange={(val) => handleChange('country', val)}
+        onChange={(val) => handleInputChange(id, 'country', val)}
         label="Select Country"
-         error={hasError('country', country)}
+        error={hasError('country', country)}
         helperText={hasError('country', country) ? 'Country is required' : ''}
-        sx={{ width: 150 }}
+        sx={{ width: { xs: '100%', sm: 150 }, flexShrink: 0 }}
         size="small"
       />
 
@@ -63,7 +67,7 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
         error={hasError('email', email)}
         helperText={hasError('email', email) ? 'Invalid email' : ''}
         onChange={(e) => handleInputChange(id, 'email', e.target.value)}
-        sx={{ width: 220 }}
+        sx={{ width: { xs: '100%', sm: 220 }, flexShrink: 0 }}
       />
 
       <InputField
@@ -72,13 +76,22 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
         error={hasError('phone', phone)}
         helperText={hasError('phone', phone) ? ' "+" character as first' : ''}
         onChange={(e) => handleInputChange(id, 'phone', e.target.value)}
-        sx={{ width: 150 }}
+        sx={{ width: { xs: '100%', sm: 150 }, flexShrink: 0 }}
       />
 
-      <IconButton onClick={() => onDelete(id)} color="error">
+      <IconButton
+        onClick={() => onDelete(id)}
+        color="error"
+        sx={{
+          alignSelf: { xs: 'flex-end', sm: 'center' },
+          mt: { xs: 1, sm: 0 },
+          flexShrink: 0,
+        }}
+      >
         <TrashIconButton />
       </IconButton>
     </Box>
+
   );
 };
 
