@@ -3,6 +3,7 @@ import {
   Typography,
   Button,
   Box,
+  Divider
 } from '@mui/material';
 import { FixedSizeList as List } from 'react-window';
 import { useUsersContext } from '../../../context/usersContext';
@@ -75,20 +76,20 @@ function UsersList() {
     );
   }, [debouncedSearchTerm, users]);
 
- const Row = ({ index, style }) => {
-  const user = filteredUsers[index];
-  return (
-    <div style={style} key={user.id}>
-      <Box sx={{ p: 1 }}>
+  const Row = ({ index, style }) => {
+    const user = filteredUsers[index];
+    return (
+      <div style={style}>
         <UserRow
           user={user}
           handleInputChange={handleInputChange}
           onDelete={handleDelete}
         />
-      </Box>
-    </div>
-  );
-};
+        <Divider />
+      </div>
+    );
+  };
+
 
   return (
     <div className={styles.usersList}>
