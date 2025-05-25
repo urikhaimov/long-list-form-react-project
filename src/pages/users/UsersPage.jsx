@@ -46,6 +46,15 @@ function UsersPage() {
     (u) => !u.name || !u.email || !u.phone || !u.country
   ).length;
 
+  const handleSnackbarClose = () => {
+    if (error) {
+      dispatch({ type: ACTIONS.SAVE_FAILURE, payload: { error: null } });
+    }
+    if (saveSuccess) {
+      setSaveSuccess(false);
+    }
+  };
+
   return (
     <Box className={styles.pageRoot}>
       <Box className={styles.pageContentContainer}>
@@ -65,33 +74,28 @@ function UsersPage() {
       </Box>
 
       <Snackbar
-        open={!!error}
+        open={!!error || saveSuccess}
         autoHideDuration={4000}
-        onClose={() => dispatch({ type: ACTIONS.SAVE_FAILURE, payload: { error: null } })}
+        onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert
-          onClose={() => dispatch({ type: ACTIONS.SAVE_FAILURE, payload: { error: null } })}
-          severity="error"
-          sx={{ width: '100%' }}
-        >
-          Failed to save users: {error}
-        </Alert>
-      </Snackbar>
-
-      <Snackbar
-        open={saveSuccess}
-        autoHideDuration={3000}
-        onClose={() => setSaveSuccess(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setSaveSuccess(false)}
-          severity="success"
-          sx={{ width: '100%' }}
-        >
-          Users saved successfully!
-        </Alert>
+        {error ? (
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="error"
+            sx={{ width: '100%' }}
+          >
+            Failed to save users: {error}
+          </Alert>
+        ) : (
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
+            Users saved successfully!
+          </Alert>
+        )}
       </Snackbar>
     </Box>
   );

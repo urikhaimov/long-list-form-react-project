@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useState, useEffect,useLayoutEffect, useMemo, useRef } from 'react';
 import {
   Typography,
   Button,
@@ -28,7 +28,7 @@ function UsersList() {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const updateWidth = () => {
       if (listContainerRef.current) {
         setListWidth(listContainerRef.current.getBoundingClientRect().width);

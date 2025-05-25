@@ -14,7 +14,7 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
       return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     }
     if (field === 'phone') {
-      return !/^\d{7,}$/.test(value);
+      return !/^\+\d{3,}$/.test(value);
     }
     return !value;
   };
@@ -70,7 +70,7 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
         label="Phone"
         value={phone}
         error={hasError('phone', phone)}
-        helperText={hasError('phone', phone) ? 'At least 7 digits' : ''}
+        helperText={hasError('phone', phone) ? ' "+" character as first' : ''}
         onChange={(e) => handleInputChange(id, 'phone', e.target.value)}
         sx={{ width: 150 }}
       />
