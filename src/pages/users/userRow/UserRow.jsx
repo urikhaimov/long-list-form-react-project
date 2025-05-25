@@ -47,7 +47,13 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
       borderRadius={2}
       bgcolor="#f9f9f9"
       className={styles.userRow}
-      sx={{ width: '100%', boxSizing: 'border-box' }}
+      sx={{
+        p: 2,
+        mb: 1, // subtle spacing between rows
+        borderRadius: 2,
+        backgroundColor: 'background.paper',
+        boxShadow: 1,
+      }}
     >
       <InputField
         label="Name"

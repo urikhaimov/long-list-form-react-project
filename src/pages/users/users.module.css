@@ -35,11 +35,7 @@
   background-color: #1f2a62;
 }
 
-.usersListContent {
-  overflow: auto;
-  height: calc(100% - 96px);
-  padding: 20px 25px;
-}
+
 
 .userRow {
   margin-block: 1px 6px;
