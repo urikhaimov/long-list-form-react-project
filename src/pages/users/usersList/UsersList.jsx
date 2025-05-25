@@ -1,9 +1,15 @@
-import { useCallback, useState, useEffect,useLayoutEffect, useMemo, useRef } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useRef,
+} from 'react';
 import {
   Typography,
   Button,
   Box,
-  Divider,
   Paper,
   Stack,
 } from '@mui/material';
@@ -12,18 +18,24 @@ import { useUsersContext } from '../../../context/usersContext';
 import UserRow from '../userRow/UserRow';
 import { ACTIONS } from '../reducers';
 import SearchInput from '../../../components/SearchInput';
+import {localReducer} from '../usersList/localReducer'
 import styles from '../users.module.css';
+
+const initialState = {
+  searchTerm: '',
+  debouncedSearchTerm: '',
+  listWidth: 0,
+};
 
 function UsersList() {
   const { users, dispatch } = useUsersContext();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [listWidth, setListWidth] = useState(0);
+  const [state, localDispatch] = useReducer(localReducer, initialState);
+  const { searchTerm, debouncedSearchTerm, listWidth } = state;
   const listContainerRef = useRef();
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
+      localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: searchTerm });
     }, 300);
     return () => clearTimeout(handler);
   }, [searchTerm]);
@@ -31,7 +43,10 @@ function UsersList() {
   useLayoutEffect(() => {
     const updateWidth = () => {
       if (listContainerRef.current) {
-        setListWidth(listContainerRef.current.getBoundingClientRect().width);
+        localDispatch({
+          type: 'SET_LIST_WIDTH',
+          payload: listContainerRef.current.getBoundingClientRect().width,
+        });
       }
     };
     updateWidth();
@@ -113,7 +128,7 @@ function UsersList() {
         <SearchInput
           label="Search by name, email, or country"
           value={searchTerm}
-          onChange={setSearchTerm}
+          onChange={(val) => localDispatch({ type: 'SET_SEARCH_TERM', payload: val })}
         />
       </Box>
 
@@ -131,7 +146,7 @@ function UsersList() {
           <List
             height={330}
             itemCount={filteredUsers.length}
-            itemSize={100} // Adjusted for padding + Paper
+            itemSize={100}
             width={listWidth}
           >
             {Row}
