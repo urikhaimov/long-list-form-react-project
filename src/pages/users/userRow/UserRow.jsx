@@ -73,6 +73,7 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
             }}
             label="Select Country"
             sx={{ width: 150 }}
+            size="small"
           />
         )}
       />
