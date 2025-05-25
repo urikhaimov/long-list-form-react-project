@@ -1,0 +1,53 @@
+.pageRoot {
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+  height: calc(100vh - 150px);
+}
+
+.pageContentContainer {
+  width: 890px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rightButtonContainer {
+  margin-left: auto;
+}
+
+.usersList {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  height: 500px;
+  width: 100%;
+}
+
+.usersListHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 16px;
+  background-color: #1f2a62;
+}
+
+.usersListContent {
+  overflow: auto;
+  height: calc(100% - 96px);
+  padding: 20px 25px;
+}
+
+.userRow {
+  margin-block: 1px 6px;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.userRowInput {
+  flex-basis: 22.5%;
+}
