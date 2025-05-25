@@ -112,7 +112,7 @@ function UsersList() {
           <List
             height={350}
             itemCount={filteredUsers.length}
-            itemSize={50}  // Adjust based on actual row height
+            itemSize={80}  // Adjust based on actual row height
             width={listWidth}
           >
             {Row}
