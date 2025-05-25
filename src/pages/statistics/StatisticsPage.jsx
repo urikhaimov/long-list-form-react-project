@@ -75,33 +75,97 @@ function StatisticsPage() {
   };
 
   return (
-    <Box sx={{ maxWidth: '1000px', mx: 'auto', p: 3 }}>
-      <Typography variant="h4" gutterBottom>
+    <Box
+      sx={{
+        width: '100%',
+        maxWidth: '1000px',
+        mx: 'auto',
+        p: { xs: 1, sm: 2, md: 3 },
+        boxSizing: 'border-box',
+      }}
+    >
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
+      >
         Statistics Page
       </Typography>
 
-      <Paper elevation={3} sx={{ p: 2, mb: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          Top Countries
-        </Typography>
-        <List dense>
-          {sortedCountries.map(([country, count]) => (
-            <ListItem key={country} disableGutters>
-              <ListItemText
-                primary={`${country}: ${count} users (${((count / totalUsers) * 100).toFixed(1)}%)`}
-              />
-            </ListItem>
-          ))}
-        </List>
-      </Paper>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 2,
+          mb: 4,
+        }}
+      >
+        <Paper
+          elevation={3}
+          sx={{
+            flex: 1,
+            p: { xs: 1, sm: 2 },
+            boxSizing: 'border-box',
+            maxHeight: { xs: 250, sm: 'auto' },
+            overflowY: 'auto',
+          }}
+        >
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ fontSize: { xs: '1.1rem', sm: '1.5rem' } }}
+          >
+            Top Countries
+          </Typography>
+          <List dense>
+            {sortedCountries.map(([country, count]) => (
+              <ListItem key={country} disableGutters>
+                <ListItemText
+                  primary={`${country}: ${count} users (${(
+                    (count / totalUsers) *
+                    100
+                  ).toFixed(1)}%)`}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
 
-      <Paper elevation={3} sx={{ p: 2, mb: 4 }}>
-        <Box sx={{ width: '100%', height: { xs: 300, sm: 400, md: 500 } }}>
-          <Pie ref={chartRef} data={chartData} options={chartOptions} />
-        </Box>
-      </Paper>
+        <Paper
+          elevation={3}
+          sx={{
+            flex: 1,
+            p: { xs: 1, sm: 2 },
+            boxSizing: 'border-box',
+            height: { xs: 300, sm: 400, md: 'auto' },
+          }}
+        >
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+            }}
+          >
+            <Pie
+              ref={chartRef}
+              data={chartData}
+              options={{
+                ...chartOptions,
+                responsive: true,
+                maintainAspectRatio: false,
+              }}
+            />
+          </Box>
+        </Paper>
+      </Box>
 
-      <Button variant="contained" color="primary" onClick={handleExport}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleExport}
+        sx={{ width: { xs: '100%', sm: 'auto' } }}
+      >
         Export Chart as Image
       </Button>
     </Box>
