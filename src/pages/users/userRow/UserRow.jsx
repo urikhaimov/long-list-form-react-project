@@ -48,10 +48,10 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
 
       <AutocompleteField
         options={countries}
-        value={country}
-        onChange={(newValue) => handleInputChange(id, 'country', newValue)}
+        value={user.country || null}
+        onChange={(val) => handleChange('country', val)}
         label="Select Country"
-        error={hasError('country', country)}
+         error={hasError('country', country)}
         helperText={hasError('country', country) ? 'Country is required' : ''}
         sx={{ width: 150 }}
         size="small"

@@ -2,7 +2,7 @@ import { useUsersContext } from '../../context/usersContext';
 import { ACTIONS } from '../users/reducers';
 import UsersList from './usersList/UsersList';
 import PrimaryButton from '../../components/PrimaryButton';
-import { Snackbar, Alert, CircularProgress, Box } from '@mui/material';
+import { Snackbar, Alert, CircularProgress, Box, Button } from '@mui/material';
 import { useState } from 'react';
 import styles from './users.module.css';
 
@@ -11,6 +11,7 @@ function UsersPage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   const handleSave = async () => {
+    console.log('handleSave', handleSave)
     const firstInvalidUser = users.find(
       (u) => !u.name || !u.email || !u.phone || !u.country
     );
@@ -47,14 +48,15 @@ function UsersPage() {
   ).length;
 
   const handleSnackbarClose = () => {
-    if (error) {
+    if (error === null) {
       dispatch({ type: ACTIONS.SAVE_FAILURE, payload: { error: null } });
     }
     if (saveSuccess) {
       setSaveSuccess(false);
     }
   };
-
+  console.log('error', !!error)
+  console.log('saveSuccess', saveSuccess)
   return (
     <Box className={styles.pageRoot}>
       <Box className={styles.pageContentContainer}>
@@ -67,14 +69,15 @@ function UsersPage() {
         {loading ? <CircularProgress size={24} color="primary" /> : <UsersList />}
 
         <Box className={styles.rightButtonContainer} sx={{ mt: 2 }}>
-          <PrimaryButton disabled={loading} onClick={handleSave}>
+          <Button variant="contained" disabled={loading} onClick={handleSave}>
             {loading ? 'Saving...' : 'Save'}
-          </PrimaryButton>
+          </Button>
         </Box>
       </Box>
 
       <Snackbar
-        open={!!error || saveSuccess}
+        open={error != null || saveSuccess}
+
         autoHideDuration={4000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}

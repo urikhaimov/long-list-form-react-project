@@ -14,7 +14,7 @@ const InputField = React.forwardRef(({ error, helperText, ...props }, ref) => {
     <StyledTextField
       {...props}
       inputRef={ref} // pass down react-hook-form's ref
-      error={error} // MUI error prop
+      error={error ? true : undefined} // MUI error prop
       helperText={helperText} // MUI helper text (e.g., validation message)
       variant="outlined"
       size="small"
