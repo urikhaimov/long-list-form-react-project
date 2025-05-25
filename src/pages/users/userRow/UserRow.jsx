@@ -1,125 +1,81 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box, IconButton } from '@mui/material';
-import { useForm, Controller } from 'react-hook-form';
 import InputField from '../../../components/InputField';
 import AutocompleteField from '../../../components/AutocompleteField';
 import TrashIconButton from '../../../components/TrashIconButton';
 import countries from '../../../data/countries.json';
-import styles from '../users.module.css';
 
 const UserRow = ({ user, handleInputChange, onDelete }) => {
   if (!user) return null;
   const { id, name, country, phone, email } = user;
 
-  const {
-    register,
-    setValue,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm({
-    mode: 'onChange',
-    defaultValues: {
-      name,
-      email,
-      phone,
-      country,
-    },
-  });
-
-  // Sync when ID (user) changes
-  useEffect(() => {
-    reset({ name, email, phone, country });
-  }, [id, name, email, phone, country, reset]);
-
-  const onValidFieldChange = (field, value) => {
-    if (user[field] !== value) {
-      handleInputChange(id, field, value);
+  const hasError = (field, value) => {
+    if (field === 'email') {
+      return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     }
+    if (field === 'phone') {
+      return !/^\d{7,}$/.test(value);
+    }
+    return !value;
   };
+
+  const isInvalid = hasError('name', name) || hasError('email', email) || hasError('phone', phone) || hasError('country', country);
 
   return (
     <Box
+      id={`user-row-${id}`}
+      tabIndex={-1}
       display="flex"
       alignItems="center"
       gap={2}
-      p={1}
-      borderRadius={2}
-      bgcolor="#f9f9f9"
-      className={styles.userRow}
       sx={{
         p: 2,
-        mb: 1, // subtle spacing between rows
+        mb: 1,
         borderRadius: 2,
-        backgroundColor: 'background.paper',
+        backgroundColor: isInvalid ? '#fff3f3' : 'background.paper',
+        border: isInvalid ? '1px solid #f44336' : '1px solid transparent',
         boxShadow: 1,
       }}
     >
       <InputField
         label="Name"
-        error={!!errors.name}
-        helperText={errors.name?.message}
-        {...register('name', {
-          required: 'Name is required',
-          onChange: (e) => onValidFieldChange('name', e.target.value),
-        })}
+        value={name}
+        error={hasError('name', name)}
+        helperText={hasError('name', name) ? 'Name is required' : ''}
+        onChange={(e) => handleInputChange(id, 'name', e.target.value)}
         sx={{ width: 150 }}
       />
 
-      <Controller
-        name="country"
-        control={control}
-        render={({ field }) => (
-          <AutocompleteField
-            options={countries}
-            value={field.value}
-            onChange={(newValue) => {
-              field.onChange(newValue);
-              onValidFieldChange('country', newValue);
-            }}
-            label="Select Country"
-            sx={{ width: 150 }}
-            size="small"
-          />
-        )}
+      <AutocompleteField
+        options={countries}
+        value={country}
+        onChange={(newValue) => handleInputChange(id, 'country', newValue)}
+        label="Select Country"
+        error={hasError('country', country)}
+        helperText={hasError('country', country) ? 'Country is required' : ''}
+        sx={{ width: 150 }}
+        size="small"
       />
 
       <InputField
         label="Email"
-        error={!!errors.email}
-        helperText={errors.email?.message}
-        {...register('email', {
-          required: 'Email is required',
-          pattern: {
-            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            message: 'Invalid email format',
-          },
-          onChange: (e) => onValidFieldChange('email', e.target.value),
-        })}
+        value={email}
+        error={hasError('email', email)}
+        helperText={hasError('email', email) ? 'Invalid email' : ''}
+        onChange={(e) => handleInputChange(id, 'email', e.target.value)}
         sx={{ width: 220 }}
       />
 
       <InputField
         label="Phone"
-        error={!!errors.phone}
-        helperText={errors.phone?.message}
-        {...register('phone', {
-          required: 'Phone is required',
-          pattern: {
-            value: /^\d{7,}$/,
-            message: 'Phone must be at least 7 digits',
-          },
-          onChange: (e) => onValidFieldChange('phone', e.target.value),
-        })}
+        value={phone}
+        error={hasError('phone', phone)}
+        helperText={hasError('phone', phone) ? 'At least 7 digits' : ''}
+        onChange={(e) => handleInputChange(id, 'phone', e.target.value)}
         sx={{ width: 150 }}
       />
 
-      <IconButton
-        onClick={() => onDelete(id)}
-        color="error"
-        aria-label={`Delete user ${name}`}
-        sx={{ alignSelf: 'center' }}
-      >
+      <IconButton onClick={() => onDelete(id)} color="error">
         <TrashIconButton />
       </IconButton>
     </Box>

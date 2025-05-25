@@ -35,6 +35,16 @@
   background-color: #1f2a62;
 }
 
+.usersList {
+  width: 100%;
+}
+
+.usersListHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
 
 
 .userRow {

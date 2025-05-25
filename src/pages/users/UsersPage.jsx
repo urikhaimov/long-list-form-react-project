@@ -2,19 +2,33 @@ import { useUsersContext } from '../../context/usersContext';
 import { ACTIONS } from '../users/reducers';
 import UsersList from './usersList/UsersList';
 import PrimaryButton from '../../components/PrimaryButton';
+import { Snackbar, Alert, CircularProgress, Box } from '@mui/material';
+import { useState } from 'react';
 import styles from './users.module.css';
-import { Snackbar, Alert, CircularProgress } from '@mui/material';
 
 function UsersPage() {
   const { users, loading, error, dispatch } = useUsersContext();
-  console.log('loading', loading)
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
   const handleSave = async () => {
+    const firstInvalidUser = users.find(
+      (u) => !u.name || !u.email || !u.phone || !u.country
+    );
+
+    if (firstInvalidUser) {
+      const row = document.getElementById(`user-row-${firstInvalidUser.id}`);
+      if (row) {
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row.focus?.();
+      }
+      return;
+    }
 
     try {
       dispatch({ type: ACTIONS.SAVE_REQUEST });
       await fakeSave(users);
-
-      alert('Users saved successfully!');
+      dispatch({ type: ACTIONS.SAVE_SUCCESS });
+      setSaveSuccess(true);
     } catch (err) {
       dispatch({ type: ACTIONS.SAVE_FAILURE, payload: { error: err.message } });
     }
@@ -24,25 +38,31 @@ function UsersPage() {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         Math.random() < 0.8 ? resolve() : reject(new Error('Server error'));
-        dispatch({ type: ACTIONS.SAVE_SUCCESS });
       }, 1000);
     });
   };
 
+  const incompleteCount = users.filter(
+    (u) => !u.name || !u.email || !u.phone || !u.country
+  ).length;
+
   return (
-    <div className={styles.pageRoot}>
-      <div className={styles.pageContentContainer}>
+    <Box className={styles.pageRoot}>
+      <Box className={styles.pageContentContainer}>
+        {incompleteCount > 0 && (
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            {incompleteCount} user(s) have incomplete or invalid information.
+          </Alert>
+        )}
+
         {loading ? <CircularProgress size={24} color="primary" /> : <UsersList />}
 
-        <div className={styles.rightButtonContainer}>
-          {!loading &&
-            <PrimaryButton disabled={loading} onClick={handleSave}>
-              Save
-            </PrimaryButton>
-          }
-
-        </div>
-      </div>
+        <Box className={styles.rightButtonContainer} sx={{ mt: 2 }}>
+          <PrimaryButton disabled={loading} onClick={handleSave}>
+            {loading ? 'Saving...' : 'Save'}
+          </PrimaryButton>
+        </Box>
+      </Box>
 
       <Snackbar
         open={!!error}
@@ -58,7 +78,22 @@ function UsersPage() {
           Failed to save users: {error}
         </Alert>
       </Snackbar>
-    </div >
+
+      <Snackbar
+        open={saveSuccess}
+        autoHideDuration={3000}
+        onClose={() => setSaveSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSaveSuccess(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          Users saved successfully!
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 }
 
