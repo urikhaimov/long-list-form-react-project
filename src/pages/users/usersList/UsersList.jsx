@@ -147,7 +147,7 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
     );
   };
   const isMobile = window.innerWidth < 600;
-  const rowHeight = isMobile ? 250 : 100; // adjust mobile height
+const rowHeight = isMobile ? 350 : 100; // adjust mobile height
   return (
     <Box className={styles.usersList} sx={{ maxWidth: '1200px', mx: 'auto', p: { xs: 1, sm: 2 } }}>
       <Stack
@@ -182,25 +182,27 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
           }}
         />
       </Box>
-
       <Box
         ref={listContainerRef}
         sx={{
           width: '100%',
-          height: { xs: 600, sm: 330 },
+          height: { xs: '80vh', sm: 330 },
+          overflowY: 'auto',
           borderRadius: 2,
           backgroundColor: 'background.paper',
           boxShadow: 1,
-          overflow: 'hidden',
         }}
       >
         {listWidth > 0 && paginatedUsers.length > 0 ? (
-          <List
-            height={isMobile ? 600 : 330}
+          <List 
+            height={listContainerRef.current ? listContainerRef.current.getBoundingClientRect().height : (isMobile ? 500 : 330)}
             itemCount={paginatedUsers.length}
             itemSize={rowHeight}
             width={listWidth}
           >
+
+
+            
             {Row}
           </List>
         ) : filteredUsers.length === 0 ? (
