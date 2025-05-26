@@ -55,9 +55,9 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
     setOriginalData(values);
     reset(values);
     setJustSaved(true);
+    onSaveSuccess?.();  // <- notify parent
     setTimeout(() => setJustSaved(false), 1500);
   };
-
   const isDirty = Object.keys(dirtyFields).length > 0;
 
   return (

@@ -17,12 +17,16 @@ function UsersPage() {
   ).length;
 
   const handleSnackbarClose = () => {
-    if (error === null) {
+    if (error) {
       dispatch({ type: 'SAVE_FAILURE', payload: { error: null } });
     }
     if (saveSuccess) {
       setSaveSuccess(false);
     }
+  };
+
+  const handleRowSaveSuccess = () => {
+    setSaveSuccess(true);
   };
 
   return (
@@ -34,12 +38,16 @@ function UsersPage() {
           </Alert>
         )}
 
-        {loading ? <CircularProgress size={24} color="primary" /> : <UsersList />}
+        {loading ? (
+          <CircularProgress size={24} color="primary" />
+        ) : (
+          <UsersList onRowSaveSuccess={handleRowSaveSuccess} />
+        )}
       </Box>
 
       <Snackbar
         open={error != null || saveSuccess}
-        autoHideDuration={4000}
+        autoHideDuration={3000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
@@ -49,7 +57,7 @@ function UsersPage() {
           </Alert>
         ) : (
           <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-            Users saved successfully!
+            User saved successfully!
           </Alert>
         )}
       </Snackbar>

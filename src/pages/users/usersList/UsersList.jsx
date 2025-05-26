@@ -21,8 +21,25 @@ const initialState = {
   listWidth: 0,
 };
 
-function UsersList() {
+function UsersList({ onRowSaveSuccess = () => {} }) {
   const { users, dispatch } = useUsersContext();
+  // rest of your logic...
+
+  const Row = ({ index, style }) => {
+    const user = filteredUsers[index];
+    return (
+      <div style={{ ...style, padding: '8px 0' }}>
+        <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
+          <UserRow
+            user={user}
+            handleInputChange={handleInputChange}
+            onDelete={handleDelete}
+            onSaveSuccess={onRowSaveSuccess}
+          />
+        </Paper>
+      </div>
+    );
+  };
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const { searchTerm, debouncedSearchTerm, listWidth } = state;
   const [isModalOpen, setModalOpen] = useState(false);
@@ -82,21 +99,7 @@ function UsersList() {
     );
   }, [debouncedSearchTerm, users]);
 
-  const Row = ({ index, style }) => {
-    const user = filteredUsers[index];
-    return (
-      <div style={{ ...style, padding: '8px 0' }}>
-        <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
-          <UserRow
-            user={user}
-            handleInputChange={handleInputChange}
-            onDelete={handleDelete}
-          />
-        </Paper>
-      </div>
-    );
-  };
-
+ 
   return (
     <Box className={styles.usersList} sx={{ maxWidth: '1200px', mx: 'auto', p: { xs: 1, sm: 2 } }}>
       <Stack
