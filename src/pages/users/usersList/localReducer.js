@@ -1,5 +1,4 @@
 export function localReducer(state, action) {
-  console.log('localReducer', action)
   switch (action.type) {
     case 'SET_SEARCH_TERM':
       return { ...state, searchTerm: action.payload };

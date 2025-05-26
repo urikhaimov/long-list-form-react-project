@@ -13,7 +13,7 @@ import {
 } from '../../../utils/validation';
 import styles from '../users.module.css';
 
-const UserRow = ({ user, handleInputChange, onDelete }) => {
+const UserRow = ({ user, handleInputChange, onDelete,onSaveSuccess }) => {
   if (!user) return null;
 
   const { id, name, country, phone, email } = user;
