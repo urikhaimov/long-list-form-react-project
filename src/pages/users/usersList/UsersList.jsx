@@ -72,6 +72,9 @@ function UsersList() {
   );
 
   const handleAdd = useCallback(() => {
+     localDispatch({ type: 'CLEAR_STATE'});
+       dispatch({ type: ACTIONS.SET_USERS, payload: users });
+    console.log('searchTerm', searchTerm)
     const newId = Date.now();
     const newUser = {
       id: newId,
