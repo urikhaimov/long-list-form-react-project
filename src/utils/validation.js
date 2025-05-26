@@ -3,7 +3,7 @@ export const nameValidation = {
   required: 'Name is required',
   pattern: {
     value: /^[a-zA-Z\s'-]+$/,
-    message: 'Name should contain only letters, spaces, apostrophes, or hyphens',
+    message: 'Invalid name format',
   },
 };
 
