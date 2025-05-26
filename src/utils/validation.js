@@ -1,8 +1,11 @@
 
 export const nameValidation = {
   required: 'Name is required',
+  pattern: {
+    value: /^[a-zA-Z]+$/,
+    message: 'Name should contain only letters (a-z or A-Z)',
+  },
 };
-
 export const emailValidation = {
   required: 'Email is required',
   pattern: {
