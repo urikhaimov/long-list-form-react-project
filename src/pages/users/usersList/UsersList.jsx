@@ -6,7 +6,10 @@ import {
   Paper,
   Stack,
   Pagination,
+  Fab,
+  Fade,
 } from '@mui/material';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { FixedSizeList as List } from 'react-window';
 import { useUsersContext } from '../../../context/usersContext';
 import UserRow from '../userRow/UserRow';
@@ -24,13 +27,14 @@ const initialState = {
 
 const ITEMS_PER_PAGE = 10;
 
-function UsersList({ onRowSaveSuccess = () => { } }) {
+function UsersList({ onRowSaveSuccess = () => {} }) {
   const { users, dispatch } = useUsersContext();
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const { searchTerm, debouncedSearchTerm, listWidth } = state;
   const [isModalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const listContainerRef = useRef();
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -51,6 +55,14 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
     updateWidth();
     window.addEventListener('resize', updateWidth);
     return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 200);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleInputChange = useCallback(
@@ -97,32 +109,34 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
 
   const handlePageChange = (_, page) => {
     setCurrentPage(page);
-    if (listContainerRef.current) {
-      window.scrollTo({
-        top: listContainerRef.current.offsetTop - 20,
-        behavior: 'smooth',
-      });
+    window.scrollTo({
+      top: listContainerRef.current.offsetTop - 20,
+      behavior: 'smooth',
+    });
+  };
 
-      listContainerRef.current.classList.add('flash');
-      setTimeout(() => {
-        listContainerRef.current.classList.remove('flash');
-      }, 500);
-    }
+  const handleScrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   };
 
   const Row = ({ index, style }) => {
     const user = paginatedUsers[index];
     return (
-      <div style={{ ...style, padding: '8px 0' }}>
-        <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
-          <UserRow
-            user={user}
-            handleInputChange={handleInputChange}
-            onDelete={handleDelete}
-            onSaveSuccess={onRowSaveSuccess}
-          />
-        </Paper>
-      </div>
+      <Fade in timeout={500} key={user.id}>
+        <div style={{ ...style, padding: '8px 0' }} className="flash-row">
+          <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
+            <UserRow
+              user={user}
+              handleInputChange={handleInputChange}
+              onDelete={handleDelete}
+              onSaveSuccess={onRowSaveSuccess}
+            />
+          </Paper>
+        </div>
+      </Fade>
     );
   };
 
@@ -155,7 +169,7 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
           value={searchTerm}
           onChange={(val) => {
             localDispatch({ type: 'SET_SEARCH_TERM', payload: val });
-            setCurrentPage(1); // reset to page 1 on search
+            setCurrentPage(1);
           }}
         />
       </Box>
@@ -191,11 +205,11 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
             color="primary"
             sx={{
               '& .MuiPaginationItem-root': {
-                color: 'gray', // non-selected pages
+                color: '#888',
               },
               '& .Mui-selected': {
                 backgroundColor: 'primary.main',
-                color: 'white',
+                color: '#fff',
               },
             }}
           />
@@ -203,6 +217,17 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
       </Box>
 
       <AddUserModal open={isModalOpen} onClose={() => setModalOpen(false)} onAdd={handleAdd} />
+
+      <Fade in={showScrollTop}>
+        <Fab
+          color="primary"
+          size="small"
+          onClick={handleScrollToTop}
+          sx={{ position: 'fixed', bottom: 16, right: 16 }}
+        >
+          <KeyboardArrowUpIcon />
+        </Fab>
+      </Fade>
     </Box>
   );
 }
