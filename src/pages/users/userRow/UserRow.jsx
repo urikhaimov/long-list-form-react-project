@@ -61,7 +61,7 @@ const UserRow = ({ user, handleInputChange, onDelete }) => {
   const isDirty = Object.keys(dirtyFields).length > 0;
 
   return (
-    <Fade in>
+    <Fade in timeout={500} key={id}>
       <Box
         className={`${styles.userRow} ${isDirty ? styles.warningHighlight : ''}`}
         display="flex"

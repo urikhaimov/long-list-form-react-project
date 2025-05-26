@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef } from 'react';
 import {
   Typography,
   Button,
@@ -129,23 +129,22 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
     });
   };
 
-  const Row = ({ index, style }) => {
-    const user = paginatedUsers[index];
-    return (
-      <Fade in timeout={500} key={user.id}>
-        <div style={{ ...style, padding: '8px 0' }} className="flash-row">
-          <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
-            <UserRow
-              user={user}
-              handleInputChange={handleInputChange}
-              onDelete={handleDelete}
-              onSaveSuccess={onRowSaveSuccess}
-            />
-          </Paper>
-        </div>
-      </Fade>
-    );
-  };
+const Row = React.memo(({ index, style }) => {
+  const user = paginatedUsers[index];
+  return (
+    <div style={{ ...style, padding: '8px 0' }}>
+      <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
+        <UserRow
+          user={user}
+          handleInputChange={handleInputChange}
+          onDelete={handleDelete}
+          onSaveSuccess={onRowSaveSuccess}
+        />
+      </Paper>
+    </div>
+  );
+});
+
   const isMobile = window.innerWidth < 600;
 const rowHeight = isMobile ? 350 : 100; // adjust mobile height
   return (
