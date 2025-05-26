@@ -20,7 +20,8 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.56.4",
     "react-query": "^3.39.3",
-    "react-router-dom": "^6.14.2"
+    "react-router-dom": "^6.14.2",
+    "react-window": "^1.8.11"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
