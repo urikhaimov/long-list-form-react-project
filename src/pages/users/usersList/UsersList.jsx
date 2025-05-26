@@ -18,6 +18,8 @@ import SearchInput from '../../../components/SearchInput';
 import { localReducer } from '../usersList/localReducer';
 import AddUserModal from '../AddUserModal';
 import styles from '../users.module.css';
+import debounce from 'lodash/debounce';
+
 
 const initialState = {
   searchTerm: '',
@@ -27,7 +29,7 @@ const initialState = {
 
 const ITEMS_PER_PAGE = 10;
 
-function UsersList({ onRowSaveSuccess = () => {} }) {
+function UsersList({ onRowSaveSuccess = () => { } }) {
   const { users, dispatch } = useUsersContext();
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const { searchTerm, debouncedSearchTerm, listWidth } = state;
@@ -35,7 +37,12 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
   const [currentPage, setCurrentPage] = useState(1);
   const listContainerRef = useRef();
   const [showScrollTop, setShowScrollTop] = useState(false);
-
+const debouncedSetSearchTerm = useCallback(
+  debounce((val) => {
+    localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: val });
+  }, 300),
+  []
+);
   useEffect(() => {
     const handler = setTimeout(() => {
       localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: searchTerm });
@@ -163,12 +170,13 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
       </Stack>
 
       <Box sx={{ mb: 2 }}>
+
         <SearchInput
-          key={searchTerm}
           label="Search by name, email, or country"
           value={searchTerm}
           onChange={(val) => {
             localDispatch({ type: 'SET_SEARCH_TERM', payload: val });
+            debouncedSetSearchTerm(val);
             setCurrentPage(1);
           }}
         />
