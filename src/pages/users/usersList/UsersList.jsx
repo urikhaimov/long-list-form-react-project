@@ -129,24 +129,36 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
     });
   };
 
-const Row = React.memo(({ index, style }) => {
-  const user = paginatedUsers[index];
-  return (
-    <div style={{ ...style, padding: '8px 0' }}>
-      <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
-        <UserRow
-          user={user}
-          handleInputChange={handleInputChange}
-          onDelete={handleDelete}
-          onSaveSuccess={onRowSaveSuccess}
-        />
-      </Paper>
-    </div>
-  );
-});
+  const Row = React.memo(({ index, style, isScrolling }) => {
+    const user = paginatedUsers[index];
+
+    if (isScrolling) {
+      // While scrolling, show placeholder to avoid input flicker
+      return (
+        <div style={{ ...style, padding: '8px 0' }}>
+          <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
+            <Typography variant="body2">Loading...</Typography>
+          </Paper>
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ ...style, padding: '8px 0' }}>
+        <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
+          <UserRow
+            user={user}
+            handleInputChange={handleInputChange}
+            onDelete={handleDelete}
+            onSaveSuccess={onRowSaveSuccess}
+          />
+        </Paper>
+      </div>
+    );
+  });
 
   const isMobile = window.innerWidth < 600;
-const rowHeight = isMobile ? 350 : 100; // adjust mobile height
+  const rowHeight = isMobile ? 350 : 100; // adjust mobile height
   return (
     <Box className={styles.usersList} sx={{ maxWidth: '1200px', mx: 'auto', p: { xs: 1, sm: 2 } }}>
       <Stack
@@ -181,11 +193,13 @@ const rowHeight = isMobile ? 350 : 100; // adjust mobile height
           }}
         />
       </Box>
+
+
       <Box
         ref={listContainerRef}
         sx={{
           width: '100%',
-          height: { xs: '80vh', sm: 330 },
+          height: { xs: 'auto', sm: 330 },
           overflowY: 'auto',
           borderRadius: 2,
           backgroundColor: 'background.paper',
@@ -193,17 +207,28 @@ const rowHeight = isMobile ? 350 : 100; // adjust mobile height
         }}
       >
         {listWidth > 0 && paginatedUsers.length > 0 ? (
-          <List 
-            height={listContainerRef.current ? listContainerRef.current.getBoundingClientRect().height : (isMobile ? 500 : 330)}
-            itemCount={paginatedUsers.length}
-            itemSize={rowHeight}
-            width={listWidth}
-          >
-
-
-            
-            {Row}
-          </List>
+          isMobile ? (
+            paginatedUsers.map((user) => (
+              <Paper key={user.id} elevation={1} sx={{ p: 2, mx: 1, mb: 1 }}>
+                <UserRow
+                  user={user}
+                  handleInputChange={handleInputChange}
+                  onDelete={handleDelete}
+                  onSaveSuccess={onRowSaveSuccess}
+                />
+              </Paper>
+            ))
+          ) : (
+            <List
+              height={listContainerRef.current ? listContainerRef.current.getBoundingClientRect().height : 330}
+              itemCount={paginatedUsers.length}
+              itemSize={rowHeight}
+              width={listWidth}
+              useIsScrolling
+            >
+              {Row}
+            </List>
+          )
         ) : filteredUsers.length === 0 ? (
           <Typography variant="body1" color="text.secondary" align="center" mt={2}>
             No users found.
