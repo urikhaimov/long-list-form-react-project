@@ -7,13 +7,37 @@ import {
   Legend,
 } from 'chart.js';
 import { useRef } from 'react';
-import { Box, Typography, Button, List, ListItem, ListItemText, Paper } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  CircularProgress,
+} from '@mui/material';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function StatisticsPage() {
-  const { users } = useUsersContext();
+  const { users, loading } = useUsersContext();
   const chartRef = useRef(null);
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '80vh',
+        }}
+      >
+        <CircularProgress size={60} />
+      </Box>
+    );
+  }
 
   const countryCounts = users.reduce((acc, user) => {
     acc[user.country] = (acc[user.country] || 0) + 1;
