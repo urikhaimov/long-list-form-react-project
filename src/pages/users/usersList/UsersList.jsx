@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useReducer,
-  useRef,
-} from 'react';
+import { useState, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef } from 'react';
 import {
   Typography,
   Button,
@@ -18,7 +11,8 @@ import { useUsersContext } from '../../../context/usersContext';
 import UserRow from '../userRow/UserRow';
 import { ACTIONS } from '../reducers';
 import SearchInput from '../../../components/SearchInput';
-import { localReducer } from '../usersList/localReducer'
+import { localReducer } from '../usersList/localReducer';
+import AddUserModal from '../AddUserModal';
 import styles from '../users.module.css';
 
 const initialState = {
@@ -31,6 +25,7 @@ function UsersList() {
   const { users, dispatch } = useUsersContext();
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const { searchTerm, debouncedSearchTerm, listWidth } = state;
+  const [isModalOpen, setModalOpen] = useState(false);
   const listContainerRef = useRef();
 
   useEffect(() => {
@@ -71,20 +66,13 @@ function UsersList() {
     [dispatch]
   );
 
-  const handleAdd = useCallback(() => {
-     localDispatch({ type: 'CLEAR_STATE'});
-       dispatch({ type: ACTIONS.SET_USERS, payload: users });
-    console.log('searchTerm', searchTerm)
+  const handleAdd = useCallback((newUserData) => {
     const newId = Date.now();
-    const newUser = {
-      id: newId,
-      name: '',
-      email: `user${newId}@example.com`,
-      phone: '',
-      country: '',
-    };
+    const newUser = { id: newId, ...newUserData };
     dispatch({ type: ACTIONS.ADD_USER, payload: { newUser } });
-  }, [dispatch]);
+    localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+    localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: '' });
+  }, [dispatch, localDispatch]);
 
   const filteredUsers = useMemo(() => {
     const lowerSearch = debouncedSearchTerm.toLowerCase();
@@ -111,70 +99,65 @@ function UsersList() {
     );
   };
 
-  return (<Box className={styles.usersList} sx={{
-    maxWidth: '1200px',
-    mx: 'auto',
-    p: { xs: 1, sm: 2 },
-  }}>
-    <Stack
-      direction={{ xs: 'column', sm: 'row' }}
-      justifyContent="space-between"
-      alignItems={{ xs: 'stretch', sm: 'center' }}
-      spacing={2}
-      sx={{ mb: 2 }}
-      className={styles.usersListHeader}
-    >
-      <Typography
-        variant="h5"
-        sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }}
+  return (
+    <Box className={styles.usersList} sx={{ maxWidth: '1200px', mx: 'auto', p: { xs: 1, sm: 2 } }}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        spacing={2}
+        sx={{ mb: 2 }}
+        className={styles.usersListHeader}
       >
-        Users List
-      </Typography>
-      <Button
-        variant="contained"
-        onClick={handleAdd}
-        sx={{ width: { xs: '100%', sm: 'auto' } }}
-      >
-        Add User
-      </Button>
-    </Stack>
+        <Typography variant="h5" sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }}>
+          Users List
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => setModalOpen(true)}
+          sx={{ width: { xs: '100%', sm: 'auto' } }}
+        >
+          Add User
+        </Button>
+      </Stack>
 
-    <Box sx={{ mb: 2 }}>
-      <SearchInput
-        label="Search by name, email, or country"
-        value={searchTerm}
-        onChange={(val) => localDispatch({ type: 'SET_SEARCH_TERM', payload: val })}
+      <Box sx={{ mb: 2 }}>
+        <SearchInput
+          key={searchTerm}
+          label="Search by name, email, or country"
+          value={searchTerm}
+          onChange={(val) => localDispatch({ type: 'SET_SEARCH_TERM', payload: val })}
+        />
+      </Box>
+
+      <Box
+        ref={listContainerRef}
+        sx={{
+          width: '100%',
+          height: { xs: 300, sm: 330 },
+          borderRadius: 2,
+          backgroundColor: 'background.paper',
+          boxShadow: 1,
+          overflow: 'hidden',
+        }}
+      >
+        {listWidth > 0 && filteredUsers.length > 0 ? (
+          <List height={330} itemCount={filteredUsers.length} itemSize={100} width={listWidth}>
+            {Row}
+          </List>
+        ) : filteredUsers.length === 0 ? (
+          <Typography variant="body1" color="text.secondary" align="center" mt={2}>
+            No users found.
+          </Typography>
+        ) : null}
+      </Box>
+
+      <AddUserModal
+        open={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onAdd={handleAdd}
       />
     </Box>
-
-    <Box
-      ref={listContainerRef}
-      sx={{
-        width: '100%',
-        height: { xs: 300, sm: 330 },
-        borderRadius: 2,
-        backgroundColor: 'background.paper',
-        boxShadow: 1,
-        overflow: 'hidden',
-      }}
-    >
-      {listWidth > 0 && filteredUsers.length > 0 ? (
-        <List
-          height={330}
-          itemCount={filteredUsers.length}
-          itemSize={100}
-          width={listWidth}
-        >
-          {Row}
-        </List>
-      ) : filteredUsers.length === 0 ? (
-        <Typography variant="body1" color="text.secondary" align="center" mt={2}>
-          No users found.
-        </Typography>
-      ) : null}
-    </Box>
-  </Box>
-
   );
 }
 

@@ -1,5 +1,5 @@
-
 export function localReducer(state, action) {
+  console.log('localReducer', action)
   switch (action.type) {
     case 'SET_SEARCH_TERM':
       return { ...state, searchTerm: action.payload };
@@ -7,6 +7,13 @@ export function localReducer(state, action) {
       return { ...state, debouncedSearchTerm: action.payload };
     case 'SET_LIST_WIDTH':
       return { ...state, listWidth: action.payload };
+    case 'CLEAR_STATE':
+      return {
+        ...state,
+        searchTerm: '',
+        debouncedSearchTerm: '',
+        listWidth: 0,
+      };
     default:
       return state;
   }

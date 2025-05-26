@@ -1,97 +1,111 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, IconButton } from '@mui/material';
+import { useForm, Controller } from 'react-hook-form';
 import InputField from '../../../components/InputField';
 import AutocompleteField from '../../../components/AutocompleteField';
 import TrashIconButton from '../../../components/TrashIconButton';
 import countries from '../../../data/countries.json';
+import {
+  nameValidation,
+  emailValidation,
+  phoneValidation,
+} from '../../../utils/validation';
 
 const UserRow = ({ user, handleInputChange, onDelete }) => {
   if (!user) return null;
   const { id, name, country, phone, email } = user;
 
-  const hasError = (field, value) => {
-    if (field === 'email') {
-      return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    }
-    if (field === 'phone') {
-      return !/^\+\d{3,}$/.test(value);
-    }
-    return !value;
-  };
+  const {
+    register,
+    setValue,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm({
+    mode: 'onChange',
+    defaultValues: { name, email, phone, country },
+  });
 
-  const isInvalid = hasError('name', name) || hasError('email', email) || hasError('phone', phone) || hasError('country', country);
+  useEffect(() => {
+    reset({ name, email, phone, country });
+  }, [id, name, email, phone, country, reset]);
+
+  const onValidFieldChange = (field, value) => {
+    if (user[field] !== value) {
+      handleInputChange(id, field, value);
+    }
+  };
 
   return (
     <Box
-      id={`user-row-${id}`}
-      tabIndex={-1}
       display="flex"
-      flexDirection={{ xs: 'column', sm: 'row' }}
-      alignItems={{ xs: 'stretch', sm: 'center' }}
+      alignItems="center"
+      flexWrap={{ xs: 'wrap', sm: 'nowrap' }}
       gap={2}
-      sx={{
-        p: 2,
-        mb: 1,
-        borderRadius: 2,
-        backgroundColor: isInvalid ? '#fff3f3' : 'background.paper',
-        border: isInvalid ? '1px solid #f44336' : '1px solid transparent',
-        boxShadow: 1,
-        width: '100%',             // Ensure row doesn’t exceed parent
-        boxSizing: 'border-box',   // Prevent width issues with padding
-        overflowX: 'hidden',       // Explicitly hide scroll if child misbehaves
-      }}
+      p={2}
+      borderRadius={2}
+      bgcolor="#f9f9f9"
+      sx={{ width: '100%', boxSizing: 'border-box' }}
     >
       <InputField
         label="Name"
-        value={name}
-        error={hasError('name', name)}
-        helperText={hasError('name', name) ? 'Name is required' : ''}
-        onChange={(e) => handleInputChange(id, 'name', e.target.value)}
-        sx={{ width: { xs: '100%', sm: 150 }, flexShrink: 0 }}
+        error={!!errors.name}
+        helperText={errors.name?.message}
+        {...register('name', {
+          ...nameValidation,
+          onChange: (e) => onValidFieldChange('name', e.target.value),
+        })}
+        sx={{ flex: '1 1 150px' }}
       />
 
-      <AutocompleteField
-        options={countries}
-        value={user.country || null}
-        onChange={(val) => handleInputChange(id, 'country', val)}
-        label="Select Country"
-        error={hasError('country', country)}
-        helperText={hasError('country', country) ? 'Country is required' : ''}
-        sx={{ width: { xs: '100%', sm: 150 }, flexShrink: 0 }}
-        size="small"
+      <Controller
+        name="country"
+        control={control}
+        render={({ field }) => (
+          <AutocompleteField
+            options={countries}
+            value={field.value}
+            onChange={(newValue) => {
+              field.onChange(newValue);
+              onValidFieldChange('country', newValue);
+            }}
+            label="Country"
+            sx={{ flex: '1 1 150px' }}
+          />
+        )}
       />
 
       <InputField
         label="Email"
-        value={email}
-        error={hasError('email', email)}
-        helperText={hasError('email', email) ? 'Invalid email' : ''}
-        onChange={(e) => handleInputChange(id, 'email', e.target.value)}
-        sx={{ width: { xs: '100%', sm: 220 }, flexShrink: 0 }}
+        error={!!errors.email}
+        helperText={errors.email?.message}
+        {...register('email', {
+          ...emailValidation,
+          onChange: (e) => onValidFieldChange('email', e.target.value),
+        })}
+        sx={{ flex: '2 1 220px' }}
       />
 
       <InputField
         label="Phone"
-        value={phone}
-        error={hasError('phone', phone)}
-        helperText={hasError('phone', phone) ? ' "+" character as first' : ''}
-        onChange={(e) => handleInputChange(id, 'phone', e.target.value)}
-        sx={{ width: { xs: '100%', sm: 150 }, flexShrink: 0 }}
+        error={!!errors.phone}
+        helperText={errors.phone?.message}
+        {...register('phone', {
+          ...phoneValidation,
+          onChange: (e) => onValidFieldChange('phone', e.target.value),
+        })}
+        sx={{ flex: '1 1 150px' }}
       />
 
       <IconButton
         onClick={() => onDelete(id)}
         color="error"
-        sx={{
-          alignSelf: { xs: 'flex-end', sm: 'center' },
-          mt: { xs: 1, sm: 0 },
-          flexShrink: 0,
-        }}
+        aria-label={`Delete user ${name}`}
+        sx={{ alignSelf: 'center' }}
       >
         <TrashIconButton />
       </IconButton>
     </Box>
-
   );
 };
 

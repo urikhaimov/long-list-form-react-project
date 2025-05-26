@@ -6,14 +6,18 @@ export const ACTIONS = {
   SAVE_REQUEST: 'save-request',
   SAVE_SUCCESS: 'save-success',
   SAVE_FAILURE: 'save-failure',
+  CLEAR_STATE: 'clear-state'
 };
 
 export function usersReducer(state, action) {
-   console.log('Reducer received action:', action);
+  
   switch (action.type) {
-    
+
     case ACTIONS.SET_USERS:
-      return { ...state, users: action.payload };
+      return {
+        ...state, users: action.payload, loading: false,
+        error: null
+      };
 
     case ACTIONS.UPDATE_USER:
       return {
@@ -34,6 +38,7 @@ export function usersReducer(state, action) {
     case ACTIONS.ADD_USER:
       return {
         ...state,
+        loading: false, error: null,
         users: [action.payload.newUser, ...state.users],
       };
 

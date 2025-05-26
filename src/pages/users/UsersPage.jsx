@@ -12,7 +12,7 @@ function UsersPage() {
   const handleSave = async () => {
     console.log('handleSave', handleSave)
     const firstInvalidUser = users.find(
-      (u) => !u.name || !u.email || !u.phone || !u.country
+      (u) => !u.name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u.email) || !/^\+\d{3,}$/.test(u.phone) || !u.country
     );
 
     if (firstInvalidUser) {
@@ -43,7 +43,7 @@ function UsersPage() {
   };
 
   const incompleteCount = users.filter(
-    (u) => !u.name || !u.email || !u.phone || !u.country
+   (u) => !u.name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u.email) || !/^\+\d{3,}$/.test(u.phone) || !u.country
   ).length;
 
   const handleSnackbarClose = () => {
@@ -54,8 +54,7 @@ function UsersPage() {
       setSaveSuccess(false);
     }
   };
-  console.log('error', !!error)
-  console.log('saveSuccess', saveSuccess)
+ 
   return (
     <Box className={styles.pageRoot}>
       <Box className={styles.pageContentContainer}>
