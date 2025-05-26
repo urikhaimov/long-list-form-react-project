@@ -57,3 +57,19 @@
 .userRowInput {
   flex-basis: 22.5%;
 }
+
+.flash {
+  animation: flashHighlight 0.5s ease-in-out;
+}
+
+@keyframes flashHighlight {
+  0% {
+    background-color: #fff8e1; /* light yellow */
+  }
+  50% {
+    background-color: #fff176; /* medium yellow */
+  }
+  100% {
+    background-color: transparent;
+  }
+}

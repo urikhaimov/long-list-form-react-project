@@ -5,6 +5,7 @@ import {
   Box,
   Paper,
   Stack,
+  Pagination,
 } from '@mui/material';
 import { FixedSizeList as List } from 'react-window';
 import { useUsersContext } from '../../../context/usersContext';
@@ -21,28 +22,14 @@ const initialState = {
   listWidth: 0,
 };
 
-function UsersList({ onRowSaveSuccess = () => {} }) {
-  const { users, dispatch } = useUsersContext();
-  // rest of your logic...
+const ITEMS_PER_PAGE = 10;
 
-  const Row = ({ index, style }) => {
-    const user = filteredUsers[index];
-    return (
-      <div style={{ ...style, padding: '8px 0' }}>
-        <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
-          <UserRow
-            user={user}
-            handleInputChange={handleInputChange}
-            onDelete={handleDelete}
-            onSaveSuccess={onRowSaveSuccess}
-          />
-        </Paper>
-      </div>
-    );
-  };
+function UsersList({ onRowSaveSuccess = () => { } }) {
+  const { users, dispatch } = useUsersContext();
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const { searchTerm, debouncedSearchTerm, listWidth } = state;
   const [isModalOpen, setModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const listContainerRef = useRef();
 
   useEffect(() => {
@@ -83,11 +70,14 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
     [dispatch]
   );
 
-  const handleAdd = useCallback((newUserData) => {
-    const newId = Date.now();
-    const newUser = { id: newId, ...newUserData };
-    dispatch({ type: ACTIONS.ADD_USER, payload: { newUser } });
-  }, [dispatch]);
+  const handleAdd = useCallback(
+    (newUserData) => {
+      const newId = Date.now();
+      const newUser = { id: newId, ...newUserData };
+      dispatch({ type: ACTIONS.ADD_USER, payload: { newUser } });
+    },
+    [dispatch]
+  );
 
   const filteredUsers = useMemo(() => {
     const lowerSearch = debouncedSearchTerm.toLowerCase();
@@ -99,7 +89,43 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
     );
   }, [debouncedSearchTerm, users]);
 
- 
+  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+  const paginatedUsers = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredUsers.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredUsers, currentPage]);
+
+  const handlePageChange = (_, page) => {
+    setCurrentPage(page);
+    if (listContainerRef.current) {
+      window.scrollTo({
+        top: listContainerRef.current.offsetTop - 20,
+        behavior: 'smooth',
+      });
+
+      listContainerRef.current.classList.add('flash');
+      setTimeout(() => {
+        listContainerRef.current.classList.remove('flash');
+      }, 500);
+    }
+  };
+
+  const Row = ({ index, style }) => {
+    const user = paginatedUsers[index];
+    return (
+      <div style={{ ...style, padding: '8px 0' }}>
+        <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
+          <UserRow
+            user={user}
+            handleInputChange={handleInputChange}
+            onDelete={handleDelete}
+            onSaveSuccess={onRowSaveSuccess}
+          />
+        </Paper>
+      </div>
+    );
+  };
+
   return (
     <Box className={styles.usersList} sx={{ maxWidth: '1200px', mx: 'auto', p: { xs: 1, sm: 2 } }}>
       <Stack
@@ -127,7 +153,10 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
           key={searchTerm}
           label="Search by name, email, or country"
           value={searchTerm}
-          onChange={(val) => localDispatch({ type: 'SET_SEARCH_TERM', payload: val })}
+          onChange={(val) => {
+            localDispatch({ type: 'SET_SEARCH_TERM', payload: val });
+            setCurrentPage(1); // reset to page 1 on search
+          }}
         />
       </Box>
 
@@ -142,8 +171,8 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
           overflow: 'hidden',
         }}
       >
-        {listWidth > 0 && filteredUsers.length > 0 ? (
-          <List height={330} itemCount={filteredUsers.length} itemSize={100} width={listWidth}>
+        {listWidth > 0 && paginatedUsers.length > 0 ? (
+          <List height={330} itemCount={paginatedUsers.length} itemSize={100} width={listWidth}>
             {Row}
           </List>
         ) : filteredUsers.length === 0 ? (
@@ -153,11 +182,27 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
         ) : null}
       </Box>
 
-      <AddUserModal
-        open={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        onAdd={handleAdd}
-      />
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+        {totalPages > 1 && (
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            sx={{
+              '& .MuiPaginationItem-root': {
+                color: 'gray', // non-selected pages
+              },
+              '& .Mui-selected': {
+                backgroundColor: 'primary.main',
+                color: 'white',
+              },
+            }}
+          />
+        )}
+      </Box>
+
+      <AddUserModal open={isModalOpen} onClose={() => setModalOpen(false)} onAdd={handleAdd} />
     </Box>
   );
 }
