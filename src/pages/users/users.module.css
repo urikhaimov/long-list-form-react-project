@@ -21,7 +21,7 @@
 .usersList {
   border: 1px solid #ccc;
   border-radius: 4px;
-  height: 500px;
+  height: 100%;
   width: 100%;
 }
 
@@ -48,19 +48,44 @@
 
 
 .userRow {
-  margin-block: 1px 6px;
-  flex-wrap: nowrap;
+  display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  margin-block: 1px 10px;
+  gap: 8px;
+  
+ 
+}
+
+.userRow > * {
+  flex: 1 1 100%; /* stack on mobile */
+}
+
+@media (min-width: 600px) {
+  .userRow {
+    flex-wrap: nowrap;
+  }
+
+  .userRow > * {
+    flex: 1 1 auto; /* inline on desktop */
+  }
 }
 
 .userRowInput {
   flex-basis: 22.5%;
 }
 
-.flash {
-  animation: flashHighlight 0.5s ease-in-out;
+.searchInput {
+  width: 100%;
 }
+
+@media (min-width: 600px) {
+  .searchInput {
+    width: auto;
+  }
+}
+
 
 @keyframes flashHighlight {
   0% {

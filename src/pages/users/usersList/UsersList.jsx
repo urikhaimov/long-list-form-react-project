@@ -37,12 +37,12 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
   const [currentPage, setCurrentPage] = useState(1);
   const listContainerRef = useRef();
   const [showScrollTop, setShowScrollTop] = useState(false);
-const debouncedSetSearchTerm = useCallback(
-  debounce((val) => {
-    localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: val });
-  }, 300),
-  []
-);
+  const debouncedSetSearchTerm = useCallback(
+    debounce((val) => {
+      localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: val });
+    }, 300),
+    []
+  );
   useEffect(() => {
     const handler = setTimeout(() => {
       localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: searchTerm });
@@ -146,7 +146,8 @@ const debouncedSetSearchTerm = useCallback(
       </Fade>
     );
   };
-
+  const isMobile = window.innerWidth < 600;
+  const rowHeight = isMobile ? 250 : 100; // adjust mobile height
   return (
     <Box className={styles.usersList} sx={{ maxWidth: '1200px', mx: 'auto', p: { xs: 1, sm: 2 } }}>
       <Stack
@@ -169,7 +170,7 @@ const debouncedSetSearchTerm = useCallback(
         </Button>
       </Stack>
 
-      <Box sx={{ mb: 2 }}>
+      <Box className={styles.searchInput}>
 
         <SearchInput
           label="Search by name, email, or country"
@@ -186,7 +187,7 @@ const debouncedSetSearchTerm = useCallback(
         ref={listContainerRef}
         sx={{
           width: '100%',
-          height: { xs: 300, sm: 330 },
+          height: { xs: 600, sm: 330 },
           borderRadius: 2,
           backgroundColor: 'background.paper',
           boxShadow: 1,
@@ -194,7 +195,12 @@ const debouncedSetSearchTerm = useCallback(
         }}
       >
         {listWidth > 0 && paginatedUsers.length > 0 ? (
-          <List height={330} itemCount={paginatedUsers.length} itemSize={100} width={listWidth}>
+          <List
+            height={isMobile ? 600 : 330}
+            itemCount={paginatedUsers.length}
+            itemSize={rowHeight}
+            width={listWidth}
+          >
             {Row}
           </List>
         ) : filteredUsers.length === 0 ? (
