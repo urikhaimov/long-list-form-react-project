@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Modal,
   Box,
@@ -7,8 +7,9 @@ import {
   Button,
   Stack,
 } from '@mui/material';
-import AutocompleteField from '../../components/AutocompleteField';
+import { useForm, Controller } from 'react-hook-form';
 import countries from '../../data/countries.json';
+import AutocompleteField from '../../components/AutocompleteField';
 import {
   nameValidation,
   emailValidation,
@@ -29,59 +30,24 @@ const modalStyle = {
 };
 
 export default function AddUserModal({ open, onClose, onAdd }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    country: '',
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      country: '',
+    },
   });
-  const [errors, setErrors] = useState({});
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: '' }));
-  };
-
-  const handleCountryChange = (selected) => {
-    setFormData((prev) => ({ ...prev, country: selected || '' }));
-    setErrors((prev) => ({ ...prev, country: '' }));
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    const name = formData.name.trim();
-    const email = formData.email.trim();
-    const phone = formData.phone.trim();
-    const country = formData.country;
-
-    if (!name) newErrors.name = nameValidation.required;
-    if (!country) newErrors.country = countryValidation.required;
-
-    if (!email) {
-      newErrors.email = emailValidation.required;
-    } else if (!emailValidation.pattern.value.test(email)) {
-      newErrors.email = emailValidation.pattern.message;
-    }
-
-    if (!phone) {
-      newErrors.phone = phoneValidation.required;
-    } else if (!phoneValidation.pattern.value.test(phone)) {
-      newErrors.phone = phoneValidation.pattern.message;
-    }
-
-    return newErrors;
-  };
-
-  const handleSubmit = () => {
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-    onAdd(formData);
-    setFormData({ name: '', email: '', phone: '', country: '' });
-    setErrors({});
+  const onSubmit = (data) => {
+    onAdd(data);
+    reset();
     onClose();
   };
 
@@ -91,46 +57,49 @@ export default function AddUserModal({ open, onClose, onAdd }) {
         <Typography variant="h6" mb={2}>
           Add New User
         </Typography>
-        <Stack spacing={2}>
-          <TextField
-            label="Name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            fullWidth
-            error={!!errors.name}
-            helperText={errors.name}
-          />
-          <TextField
-            label="Email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            fullWidth
-            error={!!errors.email}
-            helperText={errors.email}
-          />
-          <TextField
-            label="Phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            fullWidth
-            error={!!errors.phone}
-            helperText={errors.phone}
-          />
-          <AutocompleteField
-            options={countries}
-            value={formData.country}
-            onChange={handleCountryChange}
-            label="Country"
-            error={!!errors.country}
-            helperText={errors.country}
-          />
-          <Button variant="contained" onClick={handleSubmit}>
-            Add User
-          </Button>
-        </Stack>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing={2}>
+            <TextField
+              label="Name"
+              {...register('name', nameValidation)}
+              error={!!errors.name}
+              helperText={errors.name?.message}
+              fullWidth
+            />
+            <TextField
+              label="Email"
+              {...register('email', emailValidation)}
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              fullWidth
+            />
+            <TextField
+              label="Phone"
+              {...register('phone', phoneValidation)}
+              error={!!errors.phone}
+              helperText={errors.phone?.message}
+              fullWidth
+            />
+            <Controller
+              name="country"
+              control={control}
+              rules={countryValidation}
+              render={({ field }) => (
+                <AutocompleteField
+                  options={countries}
+                  value={field.value}
+                  onChange={(newValue) => field.onChange(newValue)}
+                  label="Country"
+                  error={!!errors.country}
+                  helperText={errors.country?.message}
+                />
+              )}
+            />
+            <Button type="submit" variant="contained">
+              Add User
+            </Button>
+          </Stack>
+        </form>
       </Box>
     </Modal>
   );
