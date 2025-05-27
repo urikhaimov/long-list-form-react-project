@@ -20,7 +20,7 @@ import {
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { FixedSizeList as List } from 'react-window';
 import { useUsersContext } from '../../../context/usersContext';
-import UserRow from '../userRow/UserRow';
+import UserRow from '../userRow/';
 import { ACTIONS } from '../reducers';
 import SearchInput from '../../../components/SearchInput';
 import { localReducer } from '../usersList/localReducer';

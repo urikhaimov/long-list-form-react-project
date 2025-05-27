@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
-import StatisticsPage from './pages/statistics/StatisticsPage';
-import UsersPage from './pages/users/UsersPage';
+import StatisticsPage from './pages/statistics/';
+import UsersPage from './pages/users/';
 import { ContextProvider } from './context/usersContext';
 
 function App() {

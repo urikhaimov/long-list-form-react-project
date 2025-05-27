@@ -1,5 +1,5 @@
 import { useUsersContext } from '../../context/usersContext';
-import UsersList from './usersList/UsersList';
+import UsersList from './usersList/';
 import { Snackbar, Alert, CircularProgress, Box } from '@mui/material';
 import { useState } from 'react';
 import styles from './users.module.css';
