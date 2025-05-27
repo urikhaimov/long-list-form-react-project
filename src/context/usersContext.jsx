@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect, useMemo } from 'react';
-import { usersReducer, ACTIONS } from '../pages/users/reducers';
+import { usersReducer, ACTIONS } from '../pages/users/usersReducer';
 import data from '../data/initialUsersData.json';
 
 const UsersContext = createContext();

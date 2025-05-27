@@ -1,7 +1,7 @@
 import { useReducer, useMemo  } from 'react';
 import { useUsersContext } from '../../context/usersContext';
 import UsersList from './usersList/';
-import {usersReducer } from './reducers'
+import {usersReducer } from './usersReducer'
 import { Snackbar, Alert, CircularProgress, Box } from '@mui/material';
 
 import styles from './users.module.css';
