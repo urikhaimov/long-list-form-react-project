@@ -19,13 +19,12 @@ import {
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { FixedSizeList as List } from 'react-window';
 import { useUsersContext } from '../../../context/usersContext';
-import UserRow from '../userRow/';
-import { ACTIONS } from '../usersReducer';
+import UserRow from '../userRow/UserRow';
 import SearchInput from '../../../components/SearchInput';
-import { localReducer } from './localReducer';
 import AddUserModal from '../AddUserModal';
 import styles from '../users.module.css';
 import debounce from 'lodash/debounce';
+import { localReducer } from './localReducer';
 
 const initialState = {
   searchTerm: '',
@@ -37,11 +36,10 @@ const initialState = {
   saveSuccess: false,
 };
 
-
 const ITEMS_PER_PAGE = 10;
 
-function UsersList({ onRowSaveSuccess = () => { } }) {
-  const { users, dispatch } = useUsersContext();
+function UsersList() {
+  const { users, addUser, updateUser, deleteUser } = useUsersContext();
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const {
     searchTerm,
@@ -50,7 +48,6 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
     isModalOpen,
     currentPage,
     showScrollTop,
-    saveSuccess,
   } = state;
 
   const listContainerRef = useRef();
@@ -84,33 +81,14 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleInputChange = useCallback(
-    (id, field, newValue) => {
-      dispatch({
-        type: ACTIONS.UPDATE_USER,
-        payload: { id, field, value: newValue },
-      });
-    },
-    [dispatch]
-  );
-
-  const handleDelete = useCallback(
-    (id) => {
-      dispatch({ type: ACTIONS.DELETE_USER, payload: { id } });
-    },
-    [dispatch]
-  );
-
   const handleAdd = useCallback(
     (newUserData) => {
-      const newId = Date.now();
-      const newUser = { id: newId, ...newUserData };
-      dispatch({ type: ACTIONS.ADD_USER, payload: { newUser } });
+      addUser(newUserData);
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
       localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: '' });
       localDispatch({ type: 'SET_PAGE', payload: 1 });
     },
-    [dispatch]
+    [addUser]
   );
 
   const filteredUsers = useMemo(() => {
@@ -157,8 +135,8 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
         <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
           <UserRow
             user={user}
-            handleInputChange={handleInputChange}
-            onDelete={handleDelete}
+            handleInputChange={(id, field, value) => updateUser(id, field, value)}
+            onDelete={(id) => deleteUser(id)}
             onSaveSuccess={handleRowSaveSuccess}
           />
         </Paper>
@@ -220,8 +198,8 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
               <Paper key={user.id} elevation={1} sx={{ p: 2, mx: 1, mb: 1 }}>
                 <UserRow
                   user={user}
-                  handleInputChange={handleInputChange}
-                  onDelete={handleDelete}
+                  handleInputChange={(id, field, value) => updateUser(id, field, value)}
+                  onDelete={(id) => deleteUser(id)}
                   onSaveSuccess={handleRowSaveSuccess}
                 />
               </Paper>
@@ -242,8 +220,8 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              height: '100%',              // needs height!
-              minHeight: '200px',          // fallback height if parent has no size
+              height: '100%',
+              minHeight: '200px',
               width: '100%',
             }}
           >
@@ -281,5 +259,3 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
 }
 
 export default UsersList;
-
-

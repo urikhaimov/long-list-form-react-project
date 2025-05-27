@@ -1,5 +1,5 @@
 import { Pie } from 'react-chartjs-2';
-import { useUsersContext } from '../../context/usersContext';
+import {useUsersContext} from '../../context/usersContext';
 import {
   Chart as ChartJS,
   ArcElement,

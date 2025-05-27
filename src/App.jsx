@@ -1,20 +1,31 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import NavBar from './components/NavBar';
-import StatisticsPage from './pages/statistics/';
-import UsersPage from './pages/users/';
-import { ContextProvider } from './context/usersContext';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { Box, AppBar, Toolbar, Button } from '@mui/material';
+import UsersPage from './pages/users';
+import StatisticsPage from './pages/statistics';
 
 function App() {
   return (
-    <BrowserRouter>
-      <NavBar />
-      <ContextProvider>
+    <Router>
+      <AppBar position="static">
+        <Toolbar>
+          <Button color="inherit" component={Link} to="/">
+            Users
+          </Button>
+          <Button color="inherit" component={Link} to="/statistics">
+            Statistics
+          </Button>
+        </Toolbar>
+      </AppBar>
+
+      <Box sx={{ p: 2 }}>
         <Routes>
-          <Route path="/" exact element={<StatisticsPage />} />
-          <Route path="users" element={<UsersPage />} />
+          <Route path="/" element={<UsersPage />} />
+           <Route path="/users" element={<UsersPage />} />
+          <Route path="/statistics" element={<StatisticsPage />} />
         </Routes>
-      </ContextProvider>
-    </BrowserRouter>
+      </Box>
+    </Router>
   );
 }
 

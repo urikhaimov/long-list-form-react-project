@@ -1,35 +1,52 @@
-import { createContext, useContext, useReducer, useEffect, useMemo } from 'react';
-import { usersReducer, ACTIONS } from '../pages/users/usersReducer';
+import { createContext, useContext, useMemo } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import data from '../data/initialUsersData.json';
 
 const UsersContext = createContext();
 
-const initialState = {
-  users: [],
-  loading: false,
-  error: null,
+const fetchUsers = async () => {
+  await new Promise((res) => setTimeout(res, 1000));
+  return data;
 };
 
 export const ContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(usersReducer, initialState);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    dispatch({ type: ACTIONS.SAVE_REQUEST });
-    const t = setTimeout(() => {
-      dispatch({ type: ACTIONS.SET_USERS, payload: data });
-       dispatch({ type: ACTIONS.SAVE_SUCCESS });
-    }, 1000);
-   
-    return () => clearTimeout(t);
-  }, [dispatch]);
+  const { data: users = [], isLoading, error, refetch } = useQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+  });
 
-  const contextValue = useMemo(() => ({ ...state, dispatch }), [state, dispatch]);
+  const addUser = (newUser) => {
+    queryClient.setQueryData(['users'], (old = []) => [
+      { id: Date.now(), ...newUser },  // put new user first
+      ...old,
+    ]);
+  };
+  const updateUser = (id, field, value) => {
+    queryClient.setQueryData(['users'], (old = []) =>
+      old.map((u) => (u.id === id ? { ...u, [field]: value } : u))
+    );
+  };
 
-  return (
-    <UsersContext.Provider value={contextValue}>
-      {children}
-    </UsersContext.Provider>
+  const deleteUser = (id) => {
+    queryClient.setQueryData(['users'], (old = []) => old.filter((u) => u.id !== id));
+  };
+
+  const contextValue = useMemo(
+    () => ({
+      users,
+      isLoading,
+      error,
+      refetch,
+      addUser,
+      updateUser,
+      deleteUser,
+    }),
+    [users, isLoading, error, refetch]
   );
+
+  return <UsersContext.Provider value={contextValue}>{children}</UsersContext.Provider>;
 };
 
 export const useUsersContext = () => useContext(UsersContext);

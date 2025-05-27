@@ -5,7 +5,7 @@ import InputField from '../../../components/InputField';
 import AutocompleteField from '../../../components/AutocompleteField';
 import TrashIconButton from '../../../components/TrashIconButton';
 import countries from '../../../data/countries.json';
-import {localReducer} from './localReducer';
+import { localReducer } from './localReducer';
 import {
   nameValidation,
   emailValidation,
@@ -13,10 +13,12 @@ import {
   countryValidation,
 } from '../../../utils/validation';
 import styles from '../users.module.css';
+
 const initialState = {
   originalData: {},
   justSaved: false,
 };
+
 const UserRow = ({ user, handleInputChange, onDelete, onSaveSuccess }) => {
   if (!user) return null;
 
@@ -84,8 +86,8 @@ const UserRow = ({ user, handleInputChange, onDelete, onSaveSuccess }) => {
           border: justSaved
             ? '2px solid #4caf50'
             : isDirty
-              ? '1px solid #ffa726'
-              : '1px solid transparent',
+            ? '1px solid #ffa726'
+            : '1px solid transparent',
           transition: 'background-color 0.4s ease, border 0.4s ease',
         }}
         id={`user-row-${id}`}
