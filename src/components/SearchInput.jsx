@@ -1,4 +1,3 @@
-// components/SearchInput.jsx
 import React from 'react';
 import { TextField } from '@mui/material';
 
@@ -11,11 +10,13 @@ const SearchInput = ({ label, value, onChange }) => {
       value={value}
       onChange={(e) => onChange(e.target.value)}
       sx={{
+        mb: 2, // adds bottom margin (space below the input)
         transition: 'all 0.3s ease',
         borderRadius: 2,
         backgroundColor: 'background.paper',
         '& .MuiOutlinedInput-root': {
           borderRadius: 2,
+          backgroundColor: '#f5f5f5', // same as InputField and AutocompleteField
           '& fieldset': {
             borderColor: 'grey.300',
             transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
@@ -29,6 +30,7 @@ const SearchInput = ({ label, value, onChange }) => {
           },
         },
       }}
+      size="small"
     />
   );
 };
