@@ -9,19 +9,20 @@ function App() {
     <Router>
       <AppBar position="static">
         <Toolbar>
-          <Button color="inherit" component={Link} to="/">
-            Users
-          </Button>
           <Button color="inherit" component={Link} to="/statistics">
             Statistics
           </Button>
+          <Button color="inherit" component={Link} to="/">
+            Users
+          </Button>
+
         </Toolbar>
       </AppBar>
 
       <Box sx={{ p: 2 }}>
         <Routes>
-          <Route path="/" element={<UsersPage />} />
-           <Route path="/users" element={<UsersPage />} />
+          <Route path="/" element={<StatisticsPage />} />
+          <Route path="/users" element={<UsersPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
         </Routes>
       </Box>
