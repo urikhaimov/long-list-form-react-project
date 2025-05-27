@@ -106,6 +106,9 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
       const newId = Date.now();
       const newUser = { id: newId, ...newUserData };
       dispatch({ type: ACTIONS.ADD_USER, payload: { newUser } });
+      localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+      localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: '' });
+      localDispatch({ type: 'SET_PAGE', payload: 1 });
     },
     [dispatch]
   );
