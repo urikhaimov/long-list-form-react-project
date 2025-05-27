@@ -21,10 +21,10 @@ import {
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function StatisticsPage() {
-  const { users, loading } = useUsersContext();
+  const { users, isLoading } = useUsersContext();
   const chartRef = useRef(null);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Box
         sx={{

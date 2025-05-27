@@ -157,7 +157,7 @@ function UsersList() {
         sx={{ mb: 2 }}
         className={styles.usersListHeader}
       >
-        <Typography variant="h5" sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }}>
+        <Typography variant="h5" sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' }, color:'#fff' }}>
           Users List
         </Typography>
         <Button

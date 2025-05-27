@@ -10,7 +10,7 @@ const initialState = {
 };
 
 function UsersPage() {
-  const { users, loading, error, dispatch } = useUsersContext();
+  const { users, isLoading, error, dispatch } = useUsersContext();
   const [state, localDispatch] = useReducer(usersReducer, initialState);
   const { saveSuccess } = state;
 
@@ -48,7 +48,7 @@ function UsersPage() {
           </Alert>
         )}
 
-        {loading ? (
+        {isLoading ? (
           <CircularProgress size={24} color="primary" />
         ) : (
           <UsersList onRowSaveSuccess={handleRowSaveSuccess} />

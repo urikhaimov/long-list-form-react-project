@@ -13,7 +13,7 @@ export const ACTIONS = {
 export function usersReducer(state, action) {
   switch (action.type) {
     case ACTIONS.SET_USERS:
-      return { ...state, users: action.payload, loading: false, error: null };
+      return { ...state, users: action.payload, isLoading: false, error: null };
     case ACTIONS.UPDATE_USER:
       return {
         ...state,
@@ -29,16 +29,16 @@ export function usersReducer(state, action) {
     case ACTIONS.ADD_USER:
       return {
         ...state,
-        loading: false,
+        isLoading: false,
         error: null,
         users: [action.payload.newUser, ...state.users],
       };
     case ACTIONS.SAVE_REQUEST:
-      return { ...state, loading: true, error: null };
+      return { ...state, isLoading: true, error: null };
     case ACTIONS.SAVE_SUCCESS:
-      return { ...state, loading: false, error: null };
+      return { ...state, isLoading: false, error: null };
     case ACTIONS.SAVE_FAILURE:
-      return { ...state, loading: false, error: action.payload.error };
+      return { ...state, isLoading: false, error: action.payload.error };
     default:
       return state;
   }
