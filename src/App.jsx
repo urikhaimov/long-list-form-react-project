@@ -9,10 +9,10 @@ function App() {
     <Router>
       <AppBar position="static">
         <Toolbar>
-          <Button color="inherit" component={Link} to="/statistics">
+          <Button color="inherit" component={Link} to="/">
             Statistics
           </Button>
-          <Button color="inherit" component={Link} to="/">
+          <Button color="inherit" component={Link} to="/users">
             Users
           </Button>
 
@@ -23,7 +23,7 @@ function App() {
         <Routes>
           <Route path="/" element={<StatisticsPage />} />
           <Route path="/users" element={<UsersPage />} />
-          <Route path="/statistics" element={<StatisticsPage />} />
+      
         </Routes>
       </Box>
     </Router>

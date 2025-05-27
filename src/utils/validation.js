@@ -19,7 +19,7 @@ export const phoneValidation = {
   required: 'Phone is required',
   pattern: {
     value: /^\+\d{7,}$/,
-    message: 'Phone must be at least 7 digits and +',
+    message: 'Invalid email format (must be +)',
   },
 };
 
