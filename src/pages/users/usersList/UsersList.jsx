@@ -1,4 +1,12 @@
-import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useRef,
+} from 'react';
 import {
   Typography,
   Button,
@@ -20,7 +28,6 @@ import AddUserModal from '../AddUserModal';
 import styles from '../users.module.css';
 import debounce from 'lodash/debounce';
 
-
 const initialState = {
   searchTerm: '',
   debouncedSearchTerm: '',
@@ -29,7 +36,7 @@ const initialState = {
 
 const ITEMS_PER_PAGE = 10;
 
-function UsersList({ onRowSaveSuccess = () => { } }) {
+function UsersList({ onRowSaveSuccess = () => {} }) {
   const { users, dispatch } = useUsersContext();
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const { searchTerm, debouncedSearchTerm, listWidth } = state;
@@ -37,12 +44,14 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
   const [currentPage, setCurrentPage] = useState(1);
   const listContainerRef = useRef();
   const [showScrollTop, setShowScrollTop] = useState(false);
+
   const debouncedSetSearchTerm = useCallback(
     debounce((val) => {
       localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: val });
     }, 300),
     []
   );
+
   useEffect(() => {
     const handler = setTimeout(() => {
       localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: searchTerm });
@@ -129,18 +138,11 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
     });
   };
 
-  const Row = React.memo(({ index, style, isScrolling }) => {
+  const Row = React.memo(({ index, style }) => {
     const user = paginatedUsers[index];
 
-    if (isScrolling) {
-      // While scrolling, show placeholder to avoid input flicker
-      return (
-        <div style={{ ...style, padding: '8px 0' }}>
-          <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
-            <Typography variant="body2">Loading...</Typography>
-          </Paper>
-        </div>
-      );
+    if (!user) {
+      return null;
     }
 
     return (
@@ -158,9 +160,13 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
   });
 
   const isMobile = window.innerWidth < 600;
-  const rowHeight = isMobile ? 350 : 100; // adjust mobile height
+  const rowHeight = isMobile ? 350 : 100;
+
   return (
-    <Box className={styles.usersList} sx={{ maxWidth: '1200px', mx: 'auto', p: { xs: 1, sm: 2 } }}>
+    <Box
+      className={styles.usersList}
+      sx={{ maxWidth: '1200px', mx: 'auto', p: { xs: 1, sm: 2 } }}
+    >
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         justifyContent="space-between"
@@ -182,7 +188,6 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
       </Stack>
 
       <Box className={styles.searchInput}>
-
         <SearchInput
           label="Search by name, email, or country"
           value={searchTerm}
@@ -193,7 +198,6 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
           }}
         />
       </Box>
-
 
       <Box
         ref={listContainerRef}
@@ -220,11 +224,14 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
             ))
           ) : (
             <List
-              height={listContainerRef.current ? listContainerRef.current.getBoundingClientRect().height : 330}
+              height={
+                listContainerRef.current
+                  ? listContainerRef.current.getBoundingClientRect().height
+                  : 330
+              }
               itemCount={paginatedUsers.length}
               itemSize={rowHeight}
               width={listWidth}
-              useIsScrolling
             >
               {Row}
             </List>
