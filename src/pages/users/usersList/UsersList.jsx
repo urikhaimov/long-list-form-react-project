@@ -1,5 +1,4 @@
 import React, {
-  useState,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -23,7 +22,7 @@ import { useUsersContext } from '../../../context/usersContext';
 import UserRow from '../userRow/';
 import { ACTIONS } from '../reducers';
 import SearchInput from '../../../components/SearchInput';
-import { localReducer } from '../usersList/localReducer';
+import { localReducer } from './localReducer';
 import AddUserModal from '../AddUserModal';
 import styles from '../users.module.css';
 import debounce from 'lodash/debounce';
@@ -32,18 +31,29 @@ const initialState = {
   searchTerm: '',
   debouncedSearchTerm: '',
   listWidth: 0,
+  isModalOpen: false,
+  currentPage: 1,
+  showScrollTop: false,
+  saveSuccess: false,
 };
+
 
 const ITEMS_PER_PAGE = 10;
 
 function UsersList({ onRowSaveSuccess = () => {} }) {
   const { users, dispatch } = useUsersContext();
   const [state, localDispatch] = useReducer(localReducer, initialState);
-  const { searchTerm, debouncedSearchTerm, listWidth } = state;
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const {
+    searchTerm,
+    debouncedSearchTerm,
+    listWidth,
+    isModalOpen,
+    currentPage,
+    showScrollTop,
+    saveSuccess,
+  } = state;
+
   const listContainerRef = useRef();
-  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const debouncedSetSearchTerm = useCallback(
     debounce((val) => {
@@ -51,13 +61,6 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
     }, 300),
     []
   );
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      localDispatch({ type: 'SET_DEBOUNCED_SEARCH_TERM', payload: searchTerm });
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [searchTerm]);
 
   useLayoutEffect(() => {
     const updateWidth = () => {
@@ -75,7 +78,7 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 200);
+      localDispatch({ type: 'SET_SCROLL_TOP', payload: window.scrollY > 200 });
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -118,13 +121,14 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
   }, [debouncedSearchTerm, users]);
 
   const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+
   const paginatedUsers = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredUsers.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredUsers, currentPage]);
 
   const handlePageChange = (_, page) => {
-    setCurrentPage(page);
+    localDispatch({ type: 'SET_PAGE', payload: page });
     window.scrollTo({
       top: listContainerRef.current.offsetTop - 20,
       behavior: 'smooth',
@@ -132,19 +136,19 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
   };
 
   const handleScrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleRowSaveSuccess = () => {
+    localDispatch({ type: 'SET_SAVE_SUCCESS', payload: true });
+    setTimeout(() => {
+      localDispatch({ type: 'SET_SAVE_SUCCESS', payload: false });
+    }, 1500);
   };
 
   const Row = React.memo(({ index, style }) => {
     const user = paginatedUsers[index];
-
-    if (!user) {
-      return null;
-    }
-
+    if (!user) return null;
     return (
       <div style={{ ...style, padding: '8px 0' }}>
         <Paper elevation={1} sx={{ p: 2, mx: 1 }}>
@@ -152,7 +156,7 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
             user={user}
             handleInputChange={handleInputChange}
             onDelete={handleDelete}
-            onSaveSuccess={onRowSaveSuccess}
+            onSaveSuccess={handleRowSaveSuccess}
           />
         </Paper>
       </div>
@@ -163,10 +167,7 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
   const rowHeight = isMobile ? 350 : 100;
 
   return (
-    <Box
-      className={styles.usersList}
-      sx={{ maxWidth: '1200px', mx: 'auto', p: { xs: 1, sm: 2 } }}
-    >
+    <Box className={styles.usersList} sx={{ maxWidth: '1200px', mx: 'auto', p: { xs: 1, sm: 2 } }}>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         justifyContent="space-between"
@@ -180,7 +181,7 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
         </Typography>
         <Button
           variant="contained"
-          onClick={() => setModalOpen(true)}
+          onClick={() => localDispatch({ type: 'TOGGLE_MODAL', payload: true })}
           sx={{ width: { xs: '100%', sm: 'auto' } }}
         >
           Add User
@@ -194,7 +195,7 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
           onChange={(val) => {
             localDispatch({ type: 'SET_SEARCH_TERM', payload: val });
             debouncedSetSearchTerm(val);
-            setCurrentPage(1);
+            localDispatch({ type: 'SET_PAGE', payload: 1 });
           }}
         />
       </Box>
@@ -218,17 +219,13 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
                   user={user}
                   handleInputChange={handleInputChange}
                   onDelete={handleDelete}
-                  onSaveSuccess={onRowSaveSuccess}
+                  onSaveSuccess={handleRowSaveSuccess}
                 />
               </Paper>
             ))
           ) : (
             <List
-              height={
-                listContainerRef.current
-                  ? listContainerRef.current.getBoundingClientRect().height
-                  : 330
-              }
+              height={listContainerRef.current ? listContainerRef.current.getBoundingClientRect().height : 330}
               itemCount={paginatedUsers.length}
               itemSize={rowHeight}
               width={listWidth}
@@ -251,27 +248,17 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
             onChange={handlePageChange}
             color="primary"
             sx={{
-              '& .MuiPaginationItem-root': {
-                color: '#888',
-              },
-              '& .Mui-selected': {
-                backgroundColor: 'primary.main',
-                color: '#fff',
-              },
+              '& .MuiPaginationItem-root': { color: '#888' },
+              '& .Mui-selected': { backgroundColor: 'primary.main', color: '#fff' },
             }}
           />
         )}
       </Box>
 
-      <AddUserModal open={isModalOpen} onClose={() => setModalOpen(false)} onAdd={handleAdd} />
+      <AddUserModal open={isModalOpen} onClose={() => localDispatch({ type: 'TOGGLE_MODAL', payload: false })} onAdd={handleAdd} />
 
       <Fade in={showScrollTop}>
-        <Fab
-          color="primary"
-          size="small"
-          onClick={handleScrollToTop}
-          sx={{ position: 'fixed', bottom: 16, right: 16 }}
-        >
+        <Fab color="primary" size="small" onClick={handleScrollToTop} sx={{ position: 'fixed', bottom: 16, right: 16 }}>
           <KeyboardArrowUpIcon />
         </Fab>
       </Fade>
@@ -280,3 +267,5 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
 }
 
 export default UsersList;
+
+

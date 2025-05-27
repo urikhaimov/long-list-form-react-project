@@ -1,32 +1,42 @@
+import { useReducer, useMemo  } from 'react';
 import { useUsersContext } from '../../context/usersContext';
 import UsersList from './usersList/';
+import {usersReducer } from './reducers'
 import { Snackbar, Alert, CircularProgress, Box } from '@mui/material';
-import { useState } from 'react';
+
 import styles from './users.module.css';
+const initialState = {
+  saveSuccess: false,
+};
 
 function UsersPage() {
   const { users, loading, error, dispatch } = useUsersContext();
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [state, localDispatch] = useReducer(usersReducer, initialState);
+  const { saveSuccess } = state;
 
-  const incompleteCount = users.filter(
-    (u) =>
-      !u.name ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u.email) ||
-      !/^\+\d{3,}$/.test(u.phone) ||
-      !u.country
-  ).length;
+  const incompleteCount = useMemo(
+    () =>
+      users.filter(
+        (u) =>
+          !u.name ||
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u.email) ||
+          !/^\+\d{3,}$/.test(u.phone) ||
+          !u.country
+      ).length,
+    [users]
+  );
 
   const handleSnackbarClose = () => {
     if (error) {
       dispatch({ type: 'SAVE_FAILURE', payload: { error: null } });
     }
     if (saveSuccess) {
-      setSaveSuccess(false);
+      localDispatch({ type: 'SET_SAVE_SUCCESS', payload: false });
     }
   };
 
   const handleRowSaveSuccess = () => {
-    setSaveSuccess(true);
+    localDispatch({ type: 'SET_SAVE_SUCCESS', payload: true });
   };
 
   return (

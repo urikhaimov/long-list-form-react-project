@@ -6,13 +6,14 @@ export function localReducer(state, action) {
       return { ...state, debouncedSearchTerm: action.payload };
     case 'SET_LIST_WIDTH':
       return { ...state, listWidth: action.payload };
-    case 'CLEAR_STATE':
-      return {
-        ...state,
-        searchTerm: '',
-        debouncedSearchTerm: '',
-        listWidth: 0,
-      };
+    case 'TOGGLE_MODAL':
+      return { ...state, isModalOpen: action.payload };
+    case 'SET_PAGE':
+      return { ...state, currentPage: action.payload };
+    case 'SET_SCROLL_TOP':
+      return { ...state, showScrollTop: action.payload };
+    case 'SET_SAVE_SUCCESS':
+      return { ...state, saveSuccess: action.payload };
     default:
       return state;
   }

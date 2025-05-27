@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Box, IconButton, Tooltip, Button, Stack, Fade } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import InputField from '../../../components/InputField';
 import AutocompleteField from '../../../components/AutocompleteField';
 import TrashIconButton from '../../../components/TrashIconButton';
 import countries from '../../../data/countries.json';
+import {localReducer} from './localReducer';
 import {
   nameValidation,
   emailValidation,
@@ -12,14 +13,16 @@ import {
   countryValidation,
 } from '../../../utils/validation';
 import styles from '../users.module.css';
-
-const UserRow = ({ user, handleInputChange, onDelete,onSaveSuccess }) => {
+const initialState = {
+  originalData: {},
+  justSaved: false,
+};
+const UserRow = ({ user, handleInputChange, onDelete, onSaveSuccess }) => {
   if (!user) return null;
 
   const { id, name, country, phone, email } = user;
-
-  const [originalData, setOriginalData] = useState({ name, email, phone, country });
-  const [justSaved, setJustSaved] = useState(false);
+  const [state, localDispatch] = useReducer(localReducer, initialState);
+  const { originalData, justSaved } = state;
 
   const {
     register,
@@ -34,7 +37,10 @@ const UserRow = ({ user, handleInputChange, onDelete,onSaveSuccess }) => {
   });
 
   useEffect(() => {
-    setOriginalData({ name, email, phone, country });
+    localDispatch({
+      type: 'SET_ORIGINAL',
+      payload: { name, email, phone, country },
+    });
     reset({ name, email, phone, country });
   }, [id, reset, name, email, phone, country]);
 
@@ -52,12 +58,13 @@ const UserRow = ({ user, handleInputChange, onDelete,onSaveSuccess }) => {
         handleInputChange(id, key, values[key]);
       }
     }
-    setOriginalData(values);
+    localDispatch({ type: 'SET_ORIGINAL', payload: values });
     reset(values);
-    setJustSaved(true);
-    onSaveSuccess?.();  // <- notify parent
-    setTimeout(() => setJustSaved(false), 1500);
+    localDispatch({ type: 'SET_JUST_SAVED', payload: true });
+    onSaveSuccess?.();
+    setTimeout(() => localDispatch({ type: 'SET_JUST_SAVED', payload: false }), 1500);
   };
+
   const isDirty = Object.keys(dirtyFields).length > 0;
 
   return (
