@@ -2,7 +2,7 @@
 export const nameValidation = {
   required: 'Name is required',
   pattern: {
-    value: /^[a-zA-Z\s'-]+$/,
+    value:  /^[\p{Script=Latin}\s\-']+$/u,
     message: 'Invalid name format',
   },
 };
