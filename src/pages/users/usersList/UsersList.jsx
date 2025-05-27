@@ -40,7 +40,7 @@ const initialState = {
 
 const ITEMS_PER_PAGE = 10;
 
-function UsersList({ onRowSaveSuccess = () => {} }) {
+function UsersList({ onRowSaveSuccess = () => { } }) {
   const { users, dispatch } = useUsersContext();
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const {
@@ -234,9 +234,19 @@ function UsersList({ onRowSaveSuccess = () => {} }) {
             </List>
           )
         ) : filteredUsers.length === 0 ? (
-          <Typography variant="body1" color="text.secondary" align="center" mt={2}>
-            No users found.
-          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',  // horizontal center
+              alignItems: 'center',      // vertical center
+              height: '100%',            // make sure the container has height!
+              width: '100%',             // optional, ensures full width
+            }}
+          >
+            <Typography variant="body1" color="text.secondary">
+              No users found.
+            </Typography>
+          </Box>
         ) : null}
       </Box>
 
