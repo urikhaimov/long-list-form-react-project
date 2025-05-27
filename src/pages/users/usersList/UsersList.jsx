@@ -237,13 +237,14 @@ function UsersList({ onRowSaveSuccess = () => { } }) {
           <Box
             sx={{
               display: 'flex',
-              justifyContent: 'center',  // horizontal center
-              alignItems: 'center',      // vertical center
-              height: '100%',            // make sure the container has height!
-              width: '100%',             // optional, ensures full width
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',              // needs height!
+              minHeight: '200px',          // fallback height if parent has no size
+              width: '100%',
             }}
           >
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" color="text.secondary" align="center">
               No users found.
             </Typography>
           </Box>
