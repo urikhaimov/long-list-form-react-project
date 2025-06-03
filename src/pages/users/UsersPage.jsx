@@ -15,8 +15,6 @@ function UsersPage() {
 
   const { saveSuccess } = state;
 
-  console.log('UsersPage render', saveSuccess);
-
   const incompleteCount = useMemo(
     () =>
       users.filter(
@@ -38,7 +36,7 @@ function UsersPage() {
     }
   };
 
-  
+
   return (
     <Box className={styles.pageRoot}>
       <Box className={styles.pageContentContainer}>
