@@ -10,7 +10,6 @@ It manages a long list of users with real-time form validation, editable fields,
 ✅ Editable user list (name, email, phone, country)  
 ✅ Per-row local state with debounced updates  
 ✅ Per-row **Save** button with visual success flash  
-✅ Global **Save All** button (disabled if any row is dirty)  
 ✅ Search and filter with debounced input  
 ✅ Virtual scrolling for performance (`react-window`)  
 ✅ Pie chart statistics page (country-based user count)  
