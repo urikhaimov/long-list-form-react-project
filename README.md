@@ -1,40 +1,108 @@
 # 📋 Long List Form React Challenge Project
 
-This is a React application developed as part of a technical challenge.  
-It manages a long list of users with real-time form validation, editable fields, and advanced user management.
+## 📦 Overview
+
+This React + Vite application displays and manages a long list of users with editable fields, efficient performance, and clear state management. Built with Material-UI, it emphasizes best practices for scalable React apps.
 
 ---
 
-## ✨ Features
+## 🔧 Technical Stack
 
-✅ Editable user list (name, email, phone, country)  
-✅ Per-row local state with debounced updates  
-✅ Per-row **Save** button with visual success flash  
-✅ Search and filter with debounced input  
-✅ Virtual scrolling for performance (`react-window`)  
-✅ Pie chart statistics page (country-based user count)  
-✅ Material UI for responsive, modern design  
-✅ State management using Context + Reducer  
-✅ Form validation using React Hook Form
-
----
-
-## 🚀 Tech Stack
-
-- React + Vite
-- React Hook Form
-- Material UI (MUI)
-- React Context + Reducer
-- React Window
-- Chart.js (for pie charts)
+* React 18
+* Vite
+* TypeScript *(optional, depending on version)*
+* Material-UI (MUI)
+* Virtual scroll: `react-window`
+* Global state: Context + Reducer (`useReducer`)
+* Local (per-row) state: local reducer (`localReducer`)
+* Mocked or real API for data persistence
+* Regex or validation library for input checks
 
 ---
 
-## 📦 Getting Started
+## 🏷 Main Features
 
-1️⃣ Clone the repository:
+* Display a long list of users with:
+
+  * Name
+  * Email
+  * Phone
+  * Country
+
+* Editable per-row fields
+
+* **Per-row Save button** → updates local changes into global context
+
+* **Global Save All button** → disabled if no dirty rows
+
+### Validation Rules
+
+* Name: required, letters only
+* Email: valid email format
+* Phone: `+<country code><number>` (e.g., `+972123456789`)
+* Country: required
+
+### Feedback & Error Handling
+
+* Snackbar or success indicator on save
+* Error Snackbar or Alert on failure
+
+### Performance Optimizations
+
+* Virtual scrolling with `react-window`
+* Debounced inputs to limit re-rendering
+* Memoized selectors/hooks using `useMemo` and `useCallback`
+
+### Code Structure
+
+```
+/src
+  /components
+  /context
+  /pages
+  /reducers
+  /utils
+  /api *(optional)*
+```
+
+Separate reducer files:
+
+* `usersReducer.js`
+* `localReducer.js`
+
+---
+
+## 🚀 Bonus / Future Features
+
+* Search/filtering by name, email, or country
+* Pagination *(if not using virtual scroll)*
+* Sorting by column headers
+* Persist state (localStorage or backend API)
+* Unit tests (reducers, components)
+* Mock Service Worker (MSW) integration for API testing
+* Authentication layer (optional)
+* Per-row visual flash on successful save
+* Global error boundary or retry mechanism
+
+---
+
+## 💾 Setup & Run
+
 ```bash
 git clone https://github.com/urikhaimov/long-list-form-react-challenge-project.git
-
+cd https://github.com/urikhaimov/long-list-form-react-challenge-project.git
 npm install
-npm run build && npm run preview
+npm run dev
+```
+
+### Build
+
+```bash
+npm run build
+```
+
+
+## 🤝 Contribution
+
+Feel free to open issues or pull requests! Let’s make this project robust and scalable together.
+
