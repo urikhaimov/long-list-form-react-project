@@ -1,21 +1,21 @@
-import { useReducer, useMemo  } from 'react';
+import React, { useReducer, useMemo } from 'react';
+import { Snackbar, Alert, CircularProgress, Box } from '@mui/material';
 import { useUsersContext } from '../../context/usersContext';
 import UsersList from './usersList/';
-import {usersReducer } from './usersReducer'
-import { Snackbar, Alert, CircularProgress, Box } from '@mui/material';
+import { localReducer } from './usersList/localReducer';
 import styles from './users.module.css';
 
 const initialState = {
-  users: [],
-  error: null,
-  loading: false,
-  saveSuccess: false, // NEW!
+  saveSuccess: false,
 };
 
 function UsersPage() {
-  const { users, isLoading, error, dispatch, saveSuccess } = useUsersContext();
-  const [state, localDispatch] = useReducer(usersReducer, initialState);
-  
+  const { users, isLoading, error, dispatch } = useUsersContext();
+  const [state, localDispatch] = useReducer(localReducer, initialState);
+
+  const { saveSuccess } = state;
+
+  console.log('UsersPage render', saveSuccess);
 
   const incompleteCount = useMemo(
     () =>
@@ -34,7 +34,7 @@ function UsersPage() {
       dispatch({ type: 'SAVE_FAILURE', payload: { error: null } });
     }
     if (saveSuccess) {
-      localDispatch({ type: 'SET_SAVE_SUCCESS', payload: false });
+      localDispatch({ type: 'SET_SAVE_SUCCESS', payload: false }); // FIX: reset to false
     }
   };
 
@@ -59,17 +59,25 @@ function UsersPage() {
       </Box>
 
       <Snackbar
-        open={saveSuccess}
+        open={saveSuccess || Boolean(error)} // show for either success or error
         autoHideDuration={3000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         {error ? (
-          <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="error"
+            sx={{ width: '100%' }}
+          >
             Failed to save users: {error}
           </Alert>
         ) : (
-          <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
             User saved successfully!
           </Alert>
         )}
