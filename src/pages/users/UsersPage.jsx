@@ -3,16 +3,19 @@ import { useUsersContext } from '../../context/usersContext';
 import UsersList from './usersList/';
 import {usersReducer } from './usersReducer'
 import { Snackbar, Alert, CircularProgress, Box } from '@mui/material';
-
 import styles from './users.module.css';
+
 const initialState = {
-  saveSuccess: false,
+  users: [],
+  error: null,
+  loading: false,
+  saveSuccess: false, // NEW!
 };
 
 function UsersPage() {
-  const { users, isLoading, error, dispatch } = useUsersContext();
+  const { users, isLoading, error, dispatch, saveSuccess } = useUsersContext();
   const [state, localDispatch] = useReducer(usersReducer, initialState);
-  const { saveSuccess } = state;
+  
 
   const incompleteCount = useMemo(
     () =>
@@ -56,7 +59,7 @@ function UsersPage() {
       </Box>
 
       <Snackbar
-        open={error != null || saveSuccess}
+        open={saveSuccess}
         autoHideDuration={3000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}

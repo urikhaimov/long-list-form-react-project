@@ -32,13 +32,14 @@ export function usersReducer(state, action) {
         isLoading: false,
         error: null,
         users: [action.payload.newUser, ...state.users],
+        
       };
     case ACTIONS.SAVE_REQUEST:
-      return { ...state, isLoading: true, error: null };
+      return { ...state, isLoading: true, error: null, saveSuccess: false };
     case ACTIONS.SAVE_SUCCESS:
-      return { ...state, isLoading: false, error: null };
+      return { ...state, isLoading: false, error: null, saveSuccess: true };
     case ACTIONS.SAVE_FAILURE:
-      return { ...state, isLoading: false, error: action.payload.error };
+      return { ...state, isLoading: false, error: action.payload.error, saveSuccess: false };
     default:
       return state;
   }
