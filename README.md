@@ -35,6 +35,6 @@ It manages a long list of users with real-time form validation, editable fields,
 1️⃣ Clone the repository:
 ```bash
 git clone https://github.com/urikhaimov/long-list-form-react-challenge-project.git
-```bash
+
 npm install
 npm run build && npm run preview

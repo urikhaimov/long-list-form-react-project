@@ -38,10 +38,7 @@ function UsersPage() {
     }
   };
 
-  const handleRowSaveSuccess = () => {
-    localDispatch({ type: 'SET_SAVE_SUCCESS', payload: true });
-  };
-
+  
   return (
     <Box className={styles.pageRoot}>
       <Box className={styles.pageContentContainer}>
@@ -54,7 +51,7 @@ function UsersPage() {
         {isLoading ? (
           <CircularProgress size={24} color="primary" />
         ) : (
-          <UsersList onRowSaveSuccess={handleRowSaveSuccess} />
+          <UsersList />
         )}
       </Box>
 
