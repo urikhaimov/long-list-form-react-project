@@ -33,8 +33,6 @@ This React + Vite application displays and manages a long list of users with edi
 
 * **Per-row Save button** → updates local changes into global context
 
-* **Global Save All button** → disabled if no dirty rows
-
 ### Validation Rules
 
 * Name: required, letters only
